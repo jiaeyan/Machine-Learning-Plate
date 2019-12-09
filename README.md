@@ -1,4 +1,4 @@
-###Machine Learning Plate
+###Machine Learning Plate###
 
 This is a plate of machine learning algorithm implementation tastes made of Python and Numpy. Enjoy!  
 

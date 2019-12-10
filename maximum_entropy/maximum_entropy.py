@@ -1,5 +1,6 @@
 import numpy as np
 from math import exp
+from math import log
 from scipy.misc import logsumexp
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
@@ -7,7 +8,7 @@ from sklearn.metrics import classification_report
 
 class MaximumEntropy:
 
-    def __init__(self, learning_rate=0.001, epoch=300, batch_size=150):
+    def __init__(self, learning_rate=0.001, epoch=500, batch_size=150):
         self.lr = learning_rate
         self.epoch = epoch
         self.batch_size = batch_size
@@ -37,8 +38,9 @@ class MaximumEntropy:
         y = y[shuffled_index]
         return x, y
 
-    def compute_loss(self, x, y):
-        loss = sum([self.posterior(y_, x_) for x_, y_ in zip(x, y)])
+    def compute_loss(self, X, Y):
+        """loss = negative log likelihood"""
+        loss = -sum([log(self.posterior(x, y)) for x, y in zip(X, Y)])
         return loss
 
     def show_loss(self, X_train, X_val, Y_train, Y_val, epoch_num):
@@ -53,39 +55,39 @@ class MaximumEntropy:
         ret = [(np.dot(self.W[idx], feat_vec), y_) for y_, idx in self.Y_dict.items()]
         return max(ret)[1]
 
-    def train(self, x_train, x_val, y_train, y_val):
+    def train(self, X_train, X_val, Y_train, Y_val):
 
         # construct a batch generator
-        def batch_generator(x, y):
-            num_samples = len(x)
+        def batch_generator(X, Y):
+            num_samples = len(X)
             for i in range(0, num_samples):
-                yield x[i: min(i + self.batch_size, num_samples)], \
-                      y[i: min(i + self.batch_size, num_samples)]
+                yield X[i: min(i + self.batch_size, num_samples)], \
+                      Y[i: min(i + self.batch_size, num_samples)]
 
-        x_train, y_train = self.initialize_weights(x_train, y_train)
-        x_val, y_val = self.initialize_weights(x_val, y_val)
+        X_train, Y_train = self.initialize_weights(X_train, Y_train)
+        X_val, Y_val = self.initialize_weights(X_val, Y_val)
 
-        for i in range(self.epoch):
+        for i in range(1, self.epoch + 1):
             # Step 1: compute train and validation loss
-            if i % 10 == 0 or i == 1:
-                self.show_loss(x_train, x_val, y_train, y_val, i)
-            x_train, y_train = self.shuffle_data(x_train, y_train)
-            for x_batch, y_batch in batch_generator(x_train, y_train):
-                self.update_weights(x_batch, y_batch)
+            if i % 100 == 0 or i == 1:
+                self.show_loss(X_train, X_val, Y_train, Y_val, i)
+            X_train, Y_train = self.shuffle_data(X_train, Y_train)
+            for X_batch, Y_batch in batch_generator(X_train, Y_train):
+                self.update_weights(X_batch, Y_batch)
 
-    def posterior(self, y_, x):
-        "Softmax."
-        prob_y_ = np.dot(self.W[self.Y_dict[y_]], x)
-        Z = [np.dot(self.W[self.Y_dict[y_]], x) for y_ in self.Y_dict]
-        return exp(prob_y_ - logsumexp(Z))
+    def posterior(self, x, y):
+        """Compute p(y|x) by softmax."""
+        prob_y = exp(np.dot(self.W[self.Y_dict[y]], x))
+        Z = [exp(np.dot(self.W[self.Y_dict[y]], x)) for y in self.Y_dict]
+        return prob_y / sum(Z)
 
-    def update_weights(self, x, y):
+    def update_weights(self, X, Y):
         empirical_expectations = np.zeros(self.W.shape)
         model_expectations = np.zeros(self.W.shape)
-        for i in range(len(x)):
-            empirical_expectations[self.Y_dict[y[i]]] += x[i]
-            for y_, idx in self.Y_dict.items():
-                model_expectations[idx] += x[i] * self.posterior(y_, x[i])
+        for i in range(len(X)):
+            empirical_expectations[self.Y_dict[Y[i]]] += X[i]
+            for y, idx in self.Y_dict.items():
+                model_expectations[idx] += X[i] * self.posterior(X[i], y)
         self.W += self.lr * (empirical_expectations - model_expectations)
 
     def score(self, X, Y):
@@ -118,7 +120,7 @@ def generate_data():
 
 if __name__ == '__main__':
     X, Y = generate_data()
-    maxent = MaximumEntropy(epoch=200)
+    maxent = MaximumEntropy()
     maxent.train(X, X, Y, Y)
     maxent.score(X, Y)
 

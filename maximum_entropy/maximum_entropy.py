@@ -1,7 +1,6 @@
 import numpy as np
 from math import exp
 from math import log
-from scipy.misc import logsumexp
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 
@@ -99,7 +98,7 @@ class MaximumEntropy:
             for y, y_id in self.Y_dict.items():
                 model_exp[y_id] += X[i] * self.posterior(X[i], y)
 
-        self.W += self.lr * (ob_exp - model_exp)
+        self.W -= self.lr * (model_exp - ob_exp)
 
     def score(self, X, Y):
         pred_Y = [self.predict(x) for x in X]

@@ -4,8 +4,9 @@ This is a plate of machine learning algorithm implementation tastes made of Pyth
 
 1. Linear Regression
 2. Logistic Regression
-3. Maximum Entropy Method (in progress)
-4. _more algorithms on the way..._  
+3. Maximum Entropy Method
+4. Perceptron
+5. _more algorithms on the way..._  
 
 ## Conventions
 * X: a data matrix, shaped as (|num_x|, |num_features|) 

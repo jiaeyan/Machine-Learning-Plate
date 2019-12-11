@@ -99,7 +99,6 @@ class LinearRegression:
 
             # Step 3: compute gradients and update weights
             for X_batch, Y_batch in batch_generator(X_train, Y_train):
-                # print('doing batches')
                 self.update_weights(X_batch, Y_batch)
 
     def train_SGD(self, X_train, X_val, Y_train, Y_val):
@@ -155,6 +154,7 @@ def generate_data(num_samples, num_features, w, b):
     X_train, X_val, Y_train, Y_val = train_test_split(X, Y)
 
     return X_train, X_val, Y_train, Y_val
+
 
 def generate_house_data():
     houses = fetch_california_housing()

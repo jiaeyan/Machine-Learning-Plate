@@ -70,7 +70,7 @@ class LogisticRegression:
         # construct a batch generator
         def batch_generator(X, Y):
             num_samples = len(X)
-            for i in range(0, num_samples):
+            for i in range(0, num_samples, self.batch_size):
                 yield X[i: min(i + self.batch_size, num_samples)], \
                       Y[i: min(i + self.batch_size, num_samples)]
 

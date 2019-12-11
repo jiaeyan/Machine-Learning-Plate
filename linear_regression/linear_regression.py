@@ -84,7 +84,7 @@ class LinearRegression:
         # construct a batch generator
         def batch_generator(X, Y):
             num_samples = len(X)
-            for i in range(0, num_samples):
+            for i in range(0, num_samples, self.batch_size):
                 yield X[i: min(i + self.batch_size, num_samples)], \
                       Y[i: min(i + self.batch_size, num_samples)]
 
@@ -95,10 +95,11 @@ class LinearRegression:
                 self.show_loss(X_train, X_val, Y_train, Y_val, i)
 
             # Step 2: shuffle data
-            train_x, train_y = self.shuffle_data(X_train, Y_train)
+            X_train, Y_train = self.shuffle_data(X_train, Y_train)
 
             # Step 3: compute gradients and update weights
             for X_batch, Y_batch in batch_generator(X_train, Y_train):
+                # print('doing batches')
                 self.update_weights(X_batch, Y_batch)
 
     def train_SGD(self, X_train, X_val, Y_train, Y_val):
@@ -110,7 +111,7 @@ class LinearRegression:
                 self.show_loss(X_train, X_val, Y_train, Y_val, i)
 
             # Step 2: shuffle data
-            train_x, train_y = self.shuffle_data(X_train, Y_train)
+            X_train, Y_train = self.shuffle_data(X_train, Y_train)
 
             # Step 3: compute gradients and update weights
             for x, y in zip(X_train, Y_train):
@@ -165,9 +166,9 @@ def generate_house_data():
 
 if __name__ == '__main__':
     W, B = generate_parameters(5)
-    X_train, X_val, Y_train, Y_val = generate_house_data()
-    # X_train, X_val, Y_train, Y_val = generate_data(1000, 5, W, B)
-    lr = LinearRegression(batch_size=500)
+    # X_train, X_val, Y_train, Y_val = generate_house_data()
+    X_train, X_val, Y_train, Y_val = generate_data(1000, 5, W, B)
+    lr = LinearRegression()
     lr.train(X_train, X_val, Y_train, Y_val, mode='MBGD')
     # lr.train(X_train, X_val, Y_train, Y_val, mode='SGD')
     # lr.train(X_train, X_val, Y_train, Y_val, mode='BGD')

@@ -61,7 +61,7 @@ class MaximumEntropy:
         # construct a batch generator
         def batch_generator(X, Y):
             num_samples = len(X)
-            for i in range(0, num_samples):
+            for i in range(0, num_samples, self.batch_size):
                 yield X[i: min(i + self.batch_size, num_samples)], \
                       Y[i: min(i + self.batch_size, num_samples)]
 
@@ -131,9 +131,10 @@ def generate_data():
 
 if __name__ == '__main__':
     X, Y = generate_data()
-    maxent = MaximumEntropy(batch_size=8)
+    maxent = MaximumEntropy(batch_size=5)
     maxent.train(X, X, Y, Y)
     maxent.score(X, Y)
+    print(maxent.predict(['sunny', 'hot', 'high', 'FALSE']))
 
 
 

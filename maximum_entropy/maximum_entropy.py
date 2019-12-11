@@ -16,14 +16,16 @@ class MaximumEntropy:
         self.X_dict = None
         self.Y_dict = None
 
-    def initialize_weights(self, X, y):
+    def load_data(self, X, Y):
         feat_set = {feat for x in X for feat in x}
         self.X_dict = {feat: i for i, feat in enumerate(feat_set)}
-        self.Y_dict = {y_: i for i, y_ in enumerate(set(y))}
+        self.Y_dict = {y: i for i, y in enumerate(set(Y))}
         self.W = np.zeros((len(self.Y_dict), len(self.X_dict)))
-        X = np.array([self.featurize(x) for x in X])
-        return X, np.array(y)
 
+    def remake_data(self, X, Y):
+        X = np.array([self.featurize(x) for x in X])
+        Y = np.array(Y)
+        return X, Y
 
     def featurize(self, x):
         feat_vec = np.zeros(len(self.X_dict))
@@ -31,12 +33,11 @@ class MaximumEntropy:
             feat_vec[self.X_dict[feat]] = 1
         return feat_vec
 
-
-    def shuffle_data(self, x, y):
-        shuffled_index = np.random.permutation(len(x))
-        x = x[shuffled_index]
-        y = y[shuffled_index]
-        return x, y
+    def shuffle_data(self, X, Y):
+        shuffled_index = np.random.permutation(len(X))
+        X = X[shuffled_index]
+        Y = Y[shuffled_index]
+        return X, Y
 
     def compute_loss(self, X, Y):
         """loss = negative log likelihood"""
@@ -52,7 +53,7 @@ class MaximumEntropy:
 
     def predict(self, x):
         feat_vec = self.featurize(x)
-        ret = [(np.dot(self.W[idx], feat_vec), y_) for y_, idx in self.Y_dict.items()]
+        ret = [(np.dot(self.W[i], feat_vec), y) for y, i in self.Y_dict.items()]
         return max(ret)[1]
 
     def train(self, X_train, X_val, Y_train, Y_val):
@@ -64,35 +65,45 @@ class MaximumEntropy:
                 yield X[i: min(i + self.batch_size, num_samples)], \
                       Y[i: min(i + self.batch_size, num_samples)]
 
-        X_train, Y_train = self.initialize_weights(X_train, Y_train)
-        X_val, Y_val = self.initialize_weights(X_val, Y_val)
+        self.load_data(X_train, Y_train)
+        X_train, Y_train = self.remake_data(X_train, Y_train)
+        X_val, Y_val = self.remake_data(X_val, Y_val)
 
         for i in range(1, self.epoch + 1):
+
             # Step 1: compute train and validation loss
             if i % 100 == 0 or i == 1:
                 self.show_loss(X_train, X_val, Y_train, Y_val, i)
+
+            # Step 2: shuffle data
             X_train, Y_train = self.shuffle_data(X_train, Y_train)
+
+            # Step 3: compute gradient and update weights
             for X_batch, Y_batch in batch_generator(X_train, Y_train):
                 self.update_weights(X_batch, Y_batch)
 
     def posterior(self, x, y):
         """Compute p(y|x) by softmax."""
         prob_y = exp(np.dot(self.W[self.Y_dict[y]], x))
-        Z = [exp(np.dot(self.W[self.Y_dict[y]], x)) for y in self.Y_dict]
-        return prob_y / sum(Z)
+        z = sum([exp(np.dot(self.W[self.Y_dict[y]], x)) for y in self.Y_dict])
+        return prob_y / z
 
     def update_weights(self, X, Y):
-        empirical_expectations = np.zeros(self.W.shape)
-        model_expectations = np.zeros(self.W.shape)
+        # observed expectations from data
+        ob_exp = np.zeros(self.W.shape)
+        # model expectations from model parameters
+        model_exp = np.zeros(self.W.shape)
+
         for i in range(len(X)):
-            empirical_expectations[self.Y_dict[Y[i]]] += X[i]
-            for y, idx in self.Y_dict.items():
-                model_expectations[idx] += X[i] * self.posterior(X[i], y)
-        self.W += self.lr * (empirical_expectations - model_expectations)
+            ob_exp[self.Y_dict[Y[i]]] += X[i]
+            for y, y_id in self.Y_dict.items():
+                model_exp[y_id] += X[i] * self.posterior(X[i], y)
+
+        self.W += self.lr * (ob_exp - model_exp)
 
     def score(self, X, Y):
-        pred_y = [self.predict(x) for x in X]
-        print(classification_report(Y, pred_y))
+        pred_Y = [self.predict(x) for x in X]
+        print(classification_report(Y, pred_Y))
 
 
 def generate_data():
@@ -120,7 +131,7 @@ def generate_data():
 
 if __name__ == '__main__':
     X, Y = generate_data()
-    maxent = MaximumEntropy()
+    maxent = MaximumEntropy(batch_size=8)
     maxent.train(X, X, Y, Y)
     maxent.score(X, Y)
 

@@ -9,8 +9,8 @@ This is a plate of machine learning algorithm implementation tastes made of Pyth
 5. _more algorithms on the way..._  
 
 ## Highlights
-* Independence: each algorithm file is independent, no class inheritance, no function overload, no shared util functions, even many of them look exactly the same. We break the thumb of rule of programming here, so you can clone this repo and just grab any single implementation you want and directly embed to your own codes!
-* Plainness: we use very plain codes to illustrate each algorithm, and prefer to use more straightforward function calls than high level syntax sugars from 3rd party libs, which could be hard to get their purposes from names quickly.
+* __Independence__: each algorithm file is independent, no class inheritance, no function overload, no shared util functions, even many of them look exactly the same. We break the thumb of rule of programming here, so you can clone this repo and just grab any single implementation you want and directly embed to your own codes!
+* __Plainness__: we use very plain codes to illustrate each algorithm, and prefer to use more straightforward function calls than high level syntax sugars from 3rd party libs, which could be hard to get their purposes from names quickly.
 
 ## Conventions
 * X: a data matrix, shaped as (|num_x|, |num_features|) 

@@ -11,7 +11,7 @@ $p(y=1|x;\theta) = h_\theta(x)$
 $p(y=0|x;\theta) = 1 - h_\theta(x)$
 $p(y|x;\theta) = (h_\theta(x))^y(1-h_\theta(x))^{1-y}$
 
-Likelihood is the product of probabilities of all data:  
+Likelihood is the product of probabilities of all data (__MLE__, maximum likelihood estimation):  
 $L(\theta) = p(y|X;\theta) = \prod_{i=0}^np(y^{(i)}|x^{(i)};\theta) = \prod_{i=0}^n(h_\theta(x^{(i)}))^{y^{(i)}}(1-h_\theta(x^{(i)}))^{1-y^{(i)}}$
 
 To make things easier, take log:  

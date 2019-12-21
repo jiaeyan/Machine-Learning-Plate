@@ -1,3 +1,5 @@
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
 # Machine Learning Plate
 
 This is a plate of machine learning algorithm implementation tastes made of Python and Numpy. Enjoy!  
@@ -25,3 +27,5 @@ This is a plate of machine learning algorithm implementation tastes made of Pyth
 * w: a feature weight vector
 * z: a scalar showing sums over weights dot x features
 * b: a bias
+
+$f(x_1,x_2,\ldots,x_n) = \left({1 \over x_1}\right)^2+\left({1 \over x_2}\right)^2+\cdots+\left({1 \over x_n}\right)^2$

@@ -142,3 +142,6 @@ pip-selfcheck.json
 
 # JIRA plugin
 atlassian-ide-plugin.xml
+
+# vs code
+.vscode/

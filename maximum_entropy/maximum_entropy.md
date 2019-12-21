@@ -1,4 +1,4 @@
-####Model
-####Likelihood
-####Loss function
-####Update rule
+#### Model
+#### Likelihood
+#### Loss function
+#### Update rule

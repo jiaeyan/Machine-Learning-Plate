@@ -1,9 +1,11 @@
 import numpy as np
 from math import exp
 from math import log
+from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 
+np.random.seed(42)
 
 class MaximumEntropy:
 
@@ -101,8 +103,8 @@ class MaximumEntropy:
         self.W -= self.lr * (model_exp - ob_exp)
 
     def score(self, X, Y):
-        pred_Y = [self.predict(x) for x in X]
-        print(classification_report(Y, pred_Y))
+        Y_pred = [self.predict(x) for x in X]
+        print(classification_report(Y, Y_pred))
 
 
 def generate_data():
@@ -127,13 +129,9 @@ def generate_data():
         Y.append(data[0])
     return X, Y
 
-
 if __name__ == '__main__':
     X, Y = generate_data()
     maxent = MaximumEntropy(batch_size=5)
     maxent.train(X, X, Y, Y)
     maxent.score(X, Y)
     print(maxent.predict(['sunny', 'hot', 'high', 'FALSE']))
-
-
-

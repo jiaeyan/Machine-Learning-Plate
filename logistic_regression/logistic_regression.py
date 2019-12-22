@@ -110,8 +110,8 @@ class LogisticRegression:
         self.b -= self.lr * d_b
 
     def score(self, X, Y):
-        pred_Y = self.predict(X)
-        print(classification_report(Y, pred_Y))
+        Y_pred = self.predict(X)
+        print(classification_report(Y, Y_pred))
 
 
 def generate_data():

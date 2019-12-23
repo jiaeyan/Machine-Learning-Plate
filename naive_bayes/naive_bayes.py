@@ -29,12 +29,14 @@ class NaiveBayesClassifier:
         
         elif self.mode == 'Gaussian':
             self.Y_dict = {y: i for i, y in enumerate(set(Y))}
+            self.Prior = np.zeros(len(self.Y_dict))
             self.Mean = np.zeros((len(X[0]), len(set(Y))))
             self.Stdev = np.zeros((len(X[0]), len(set(Y))))
     
     def remake_data(self, X, Y):
         data = defaultdict(list)
         for x, y in zip(X, Y):
+            self.Prior[self.Y_dict[y]] += 1
             data[y].append(x)
         return data
 
@@ -43,8 +45,9 @@ class NaiveBayesClassifier:
         for y, i in self.Y_dict.items():
             exponent = np.exp(-(np.power(x - self.Mean[:, i], 2) /
                               (2 * np.power(self.Stdev[:, i], 2))))
-            prob = (1 / (math.sqrt(2 * math.pi) * self.Stdev[:, i])) * exponent
-            probs.append((sum(np.log(prob)), y))
+            likelihood = (1 / (math.sqrt(2 * math.pi) * self.Stdev[:, i])) * exponent
+            prob = sum(np.log(likelihood)) + np.log(self.Prior[i])
+            probs.append((prob, y))
         return probs
     
     def train(self, X, Y):
@@ -155,10 +158,10 @@ def generate_iris_data():
     return X_train, X_val, Y_train, Y_val
 
 if __name__ == '__main__':
-    X_train, X_val, Y_train, Y_val = generate_news_data()
-    # X_train, X_val, Y_train, Y_val = generate_iris_data()
+    # X_train, X_val, Y_train, Y_val = generate_news_data()
+    X_train, X_val, Y_train, Y_val = generate_iris_data()
     # nb = NaiveBayesClassifier(mode='Bernoulli')
-    nb = NaiveBayesClassifier(mode='Multinomial')
-    # nb = NaiveBayesClassifier(mode='Gaussian')
+    # nb = NaiveBayesClassifier(mode='Multinomial')
+    nb = NaiveBayesClassifier(mode='Gaussian')
     nb.train(X_train, Y_train)
     nb.score(X_val, Y_val)

@@ -8,7 +8,8 @@ This is a plate of machine learning algorithm implementation tastes made of Pyth
 4. Perceptron
 5. K-Nearest Neighbor
 6. Naive Bayes Classifier: Multinomial, Bernoulli, Gaussian
-7. _more algorithms on the way..._  
+7. Hidden Markov Model: Forward, Backward, Baum-Welch algorithms
+8. _more algorithms on the way..._  
 
 ## Highlights
 * __Independence__: each algorithm file is independent, no class inheritance, no function overload, no shared util functions, even many of them look exactly the same. We break the thumb of rule of programming here, so you can clone this repo and just grab any single implementation you want and directly embed to your own codes!

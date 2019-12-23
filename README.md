@@ -2,12 +2,12 @@
 
 This is a plate of machine learning algorithm implementation tastes made of Python and Numpy. Enjoy!  
 
-1. Linear Regression
-2. Logistic Regression
+1. Linear Regression: BGD, SGD, MBGD
+2. Logistic Regression: BGD, SGD, MBGD
 3. Maximum Entropy Method
 4. Perceptron
 5. K-Nearest Neighbor
-6. Naive Bayes Classifier
+6. Naive Bayes Classifier: Multinomial, Bernoulli, Gaussian
 7. _more algorithms on the way..._  
 
 ## Highlights

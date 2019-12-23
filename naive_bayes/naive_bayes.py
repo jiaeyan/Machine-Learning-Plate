@@ -20,7 +20,7 @@ class NaiveBayesClassifier:
         self.Stdev = None
     
     def load_data(self, X, Y):
-        if self.mode == 'Multinomail' or self.mode == 'Bernoulli':
+        if self.mode == 'Multinomial' or self.mode == 'Bernoulli':
             feat_set = {feat for x in X for feat in x}
             self.X_dict = {feat: i for i, feat in enumerate(feat_set)}
             self.Y_dict = {y: i for i, y in enumerate(set(Y))}
@@ -78,9 +78,12 @@ class NaiveBayesClassifier:
                 self.Likelihood[self.X_dict[feat]][self.Y_dict[y]] += 1
         
         # Step 3: compute probabilities
-        self.Likelihood = (self.Likelihood + self.laplace) / (self.Prior + self.laplace * len(self.X_dict))
+        self.Likelihood = np.log(
+            (self.Likelihood + self.laplace) / 
+            (self.Prior + self.laplace * len(self.X_dict))
+            )
         
-        self.Prior = self.Prior / sum(self.Prior)
+        self.Prior = np.log(self.Prior / sum(self.Prior))
     
     def train_Bernoulli(self, X, Y):
         # Step 1: init weights
@@ -93,9 +96,12 @@ class NaiveBayesClassifier:
                 self.Likelihood[self.X_dict[feat]][self.Y_dict[y]] += 1
         
         # Step 3: compute probabilities
-        self.Likelihood = (self.Likelihood + self.laplace) / (self.Prior + self.laplace * len(self.Y_dict))
+        self.Likelihood = np.log(
+            (self.Likelihood + self.laplace) / 
+            (self.Prior + self.laplace * len(self.Y_dict))
+            )
         
-        self.Prior = self.Prior / sum(self.Prior)
+        self.Prior = np.log(self.Prior / sum(self.Prior))
 
     def feat_vec(self, x):
         vec = np.zeros(len(self.X_dict))
@@ -105,22 +111,23 @@ class NaiveBayesClassifier:
                 vec[self.X_dict[feat]] += 1
         return vec
 
-    def predict(self, x, i):
+    def predict(self, x):
         if self.mode == 'Multinomial' or self.mode == 'Bernoulli':
-            print('predicting new x {}...'.format(i))
             vec = self.feat_vec(x)
-            # return max([(np.dot(vec, np.log(self.Likelihood[:, i])) + np.log(self.Prior[i]), y) for y, i in self.Y_dict.items()])[1]
-            return max([(np.dot(vec, self.process_likelihood(vec, self.Likelihood[:, i])) + np.log(self.Prior[i]), y) for y, i in self.Y_dict.items()])[1]
+            return max([(np.dot(vec, self.Likelihood[:, i]) + self.Prior[i], y) for y, i in self.Y_dict.items()])[1]
+
         elif self.mode == 'Gaussian':
             return max(self.gaussian_prob(x))[1]
-
-    def process_likelihood(self, feat_vec, likelihood):
-        if self.mode == 'Bernoulli':
-            return np.log([p if feat_vec[i] > 0 else 1 - p for i, p in enumerate(likelihood)])
-        return np.log(likelihood)
+    
+    # Thearitically the False features should also be evidences for Bernoulli, however
+    # it's slow and doesn't improve performance. We only use True features like Multinomial.
+    # def process_likelihood(self, feat_vec, likelihood):
+    #     if self.mode == 'Bernoulli':
+    #         return np.log([p if feat_vec[i] > 0 else 1 - p for i, p in enumerate(likelihood)])
+    #     return np.log(likelihood)
 
     def score(self, X, Y):
-        Y_pred = [self.predict(x, i) for i, x in enumerate(X)]
+        Y_pred = [self.predict(x) for x in X]
         print(classification_report(Y, Y_pred))
 
 def generate_news_data():
@@ -133,8 +140,8 @@ def generate_news_data():
     X = news.data
     Y = news.target
     X_train, X_val, Y_train, Y_val = train_test_split(X, Y)
-    print('Train data shape', X_train.shape)
-    print('Validation data shape', X_val.shape)
+    print('Train data shape', len(X_train), len(X_train[0]))
+    print('Validation data shape', len(X_val), len(X_val[0]))
     return split_data(X_train), split_data(X_val), Y_train, Y_val
 
 def generate_iris_data():
@@ -150,8 +157,8 @@ def generate_iris_data():
 if __name__ == '__main__':
     X_train, X_val, Y_train, Y_val = generate_news_data()
     # X_train, X_val, Y_train, Y_val = generate_iris_data()
-    nb = NaiveBayesClassifier(mode='Bernoulli')
-    # # nb = NaiveBayesClassifier(mode='Multinomial')
+    # nb = NaiveBayesClassifier(mode='Bernoulli')
+    nb = NaiveBayesClassifier(mode='Multinomial')
     # nb = NaiveBayesClassifier(mode='Gaussian')
     nb.train(X_train, Y_train)
     nb.score(X_val, Y_val)

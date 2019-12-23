@@ -2,7 +2,6 @@ import numpy as np
 from math import sqrt
 from collections import Counter
 from sklearn.model_selection import train_test_split
-from sklearn.datasets import load_digits
 from sklearn.metrics import classification_report
 
 np.random.seed(42)
@@ -37,10 +36,13 @@ class KNN:
         print(classification_report(Y, Y_pred))
 
 def generate_digit_data():
+    from sklearn.datasets import load_digits
     digits = load_digits()
     X = digits.data
     Y = digits.target
     X_train, X_val, Y_train, Y_val = train_test_split(X, Y)
+    print('Train data shape', X_train.shape)
+    print('Validation data shape', X_val.shape)
     return X_train, X_val, Y_train, Y_val
 
 if __name__ == '__main__':

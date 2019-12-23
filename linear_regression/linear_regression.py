@@ -1,7 +1,5 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.datasets.california_housing import fetch_california_housing
-from sklearn.preprocessing import StandardScaler
 
 np.random.seed(42)
 
@@ -42,8 +40,8 @@ class LinearRegression:
         return np.sum(self.w * X, axis=1) + self.b
 
     def compute_loss(self, X, Y):
-        pred_Y = self.predict(X)
-        return (1 / (2 * len(X))) * np.sum((pred_Y - Y) ** 2)
+        Y_pred = self.predict(X)
+        return (1 / (2 * len(X))) * np.sum((Y_pred - Y) ** 2)
 
     def show_loss(self, X_train, X_val, Y_train, Y_val, epoch_num):
         train_loss = self.compute_loss(X_train, Y_train)
@@ -55,8 +53,8 @@ class LinearRegression:
     def update_weights(self, X, Y):
         # broadcast multiplication of error diff of each sample to all its features
         # then accumulate all errors of each feature weight, update
-        pred_Y = self.predict(X)
-        error_diffs = (pred_Y - Y).reshape(-1, 1)
+        Y_pred = self.predict(X)
+        error_diffs = (Y_pred - Y).reshape(-1, 1)
         d_w = (1 / len(X)) * np.sum(error_diffs * X, axis=0)
         d_b = (1 / len(X)) * np.sum(error_diffs)
         self.w -= self.lr * d_w
@@ -153,14 +151,21 @@ def generate_data(num_samples, num_features, w, b):
 
     X_train, X_val, Y_train, Y_val = train_test_split(X, Y)
 
+    print('Train data shape', X_train.shape)
+    print('Validation data shape', X_val.shape)
+
     return X_train, X_val, Y_train, Y_val
 
 
 def generate_house_data():
+    from sklearn.datasets.california_housing import fetch_california_housing
+    from sklearn.preprocessing import StandardScaler
     houses = fetch_california_housing()
     scaler = StandardScaler()
     scaled_data = scaler.fit_transform(houses.data)
     X_train, X_val, Y_train, Y_val = train_test_split(scaled_data, houses.target)
+    print('Train data shape', X_train.shape)
+    print('Validation data shape', X_val.shape)
     return X_train, X_val, Y_train, Y_val
 
 

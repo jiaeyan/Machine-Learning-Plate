@@ -1,6 +1,5 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
-from sklearn.datasets import load_iris
 from sklearn.metrics import classification_report
 
 np.random.seed(42)
@@ -59,10 +58,13 @@ class Perceptron:
 
 
 def generate_data():
+    from sklearn.datasets import load_iris
     iris = load_iris()
     X = iris.data[:100]
     Y = [1 if y == 1 else -1 for y in iris.target[:100]]
     X_train, X_val, Y_train, Y_val = train_test_split(X, Y)
+    print('Train data shape', X_train.shape)
+    print('Validation data shape', X_val.shape)
     return X_train, X_val, Y_train, Y_val
 
 

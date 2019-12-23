@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 
@@ -21,8 +20,8 @@ class LogisticRegression:
 
     def predict(self, X):
         pred_probs = self.sigmoid(X)
-        pred_Y = np.array([0 if prob < 0.5 else 1 for prob in pred_probs])
-        return pred_Y
+        Y_pred = np.array([0 if prob < 0.5 else 1 for prob in pred_probs])
+        return Y_pred
 
     def sigmoid(self, X):
         Z = np.sum(self.w * X, axis=1) + self.b
@@ -115,8 +114,11 @@ class LogisticRegression:
 
 
 def generate_data():
+    from sklearn.datasets import load_iris
     iris = load_iris()
     X_train, X_val, Y_train, Y_val = train_test_split(iris.data[:100], iris.target[:100])
+    print('Train data shape', X_train.shape)
+    print('Validation data shape', X_val.shape)
     return X_train, X_val, Y_train, Y_val
 
 

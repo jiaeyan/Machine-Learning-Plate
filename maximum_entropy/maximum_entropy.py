@@ -1,7 +1,6 @@
 import numpy as np
 from math import exp
 from math import log
-from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 
@@ -31,7 +30,8 @@ class MaximumEntropy:
     def featurize(self, x):
         feat_vec = np.zeros(len(self.X_dict))
         for feat in x:
-            feat_vec[self.X_dict[feat]] = 1
+            if feat in self.X_dict:
+                feat_vec[self.X_dict[feat]] = 1
         return feat_vec
 
     def shuffle_data(self, X, Y):
@@ -71,7 +71,6 @@ class MaximumEntropy:
         X_val, Y_val = self.remake_data(X_val, Y_val)
 
         for i in range(1, self.epoch + 1):
-
             # Step 1: compute train and validation loss
             if i % 100 == 0 or i == 1:
                 self.show_loss(X_train, X_val, Y_train, Y_val, i)
@@ -85,9 +84,9 @@ class MaximumEntropy:
 
     def posterior(self, x, y):
         """Compute p(y|x) by softmax."""
-        prob_y = exp(np.dot(self.W[self.Y_dict[y]], x))
+        y_prob = exp(np.dot(self.W[self.Y_dict[y]], x))
         z = sum([exp(np.dot(self.W[self.Y_dict[y]], x)) for y in self.Y_dict])
-        return prob_y / z
+        return y_prob / z
 
     def update_weights(self, X, Y):
         # observed expectations from data
@@ -129,9 +128,27 @@ def generate_data():
         Y.append(data[0])
     return X, Y
 
+def generate_news_data():
+    def split_data(dataset):
+        dataset = [data.lower().split() for data in dataset]
+        return dataset
+
+    from sklearn.datasets import fetch_20newsgroups
+    news = fetch_20newsgroups()
+    X = news.data
+    Y = news.target
+    X_train, X_val, Y_train, Y_val = train_test_split(X, Y)
+    print('Train data shape', X_train.shape)
+    print('Validation data shape', X_val.shape)
+    return split_data(X_train), split_data(X_val), Y_train, Y_val
+
 if __name__ == '__main__':
     X, Y = generate_data()
     maxent = MaximumEntropy(batch_size=5)
     maxent.train(X, X, Y, Y)
     maxent.score(X, Y)
     print(maxent.predict(['sunny', 'hot', 'high', 'FALSE']))
+    # X_train, X_val, Y_train, Y_val = generate_news_data()
+    # maxent = MaximumEntropy(batch_size=1024)
+    # maxent.train(X_train, X_val, Y_train, Y_val)
+    # maxent.score(X_val, Y_val)

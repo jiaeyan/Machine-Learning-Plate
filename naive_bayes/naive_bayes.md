@@ -1,17 +1,17 @@
 #### Main idea  
-$$\hat{y} = argmax_{y \in Y}P(y|x) = argmax_{y \in Y}\frac {P(x|y)P(y)} {P(x)}$$
+$$\hat{y} = \argmax_{y \in Y}P(y|x) = \argmax_{y \in Y}\frac {P(x|y)P(y)} {P(x)}$$
 Since $P(x)$ is the same for all labels, omit it:  
-$$\hat{y} = argmax_{y \in Y}P(y|x) = argmax_{y \in Y}\overbrace{P(x|y)}^{likelihood}\overbrace{P(y)}^{prior}$$
+$$\hat{y} = \argmax_{y \in Y}P(y|x) = \argmax_{y \in Y}\overbrace{P(x|y)}^{likelihood}\overbrace{P(y)}^{prior}$$
 According to the feature independence assumption:  
 $$\begin{aligned}
-\hat{y} &= argmax_{y \in Y}P(y|x) \\ 
-        &= argmax_{y \in Y}\overbrace{P(x|y)}^{likelihood}\overbrace{P(y)}^{prior} \\
-        &= argmax_{y \in Y}\overbrace{P(x_1x_2x_3\dots x_n|y)}^{likelihood}\overbrace{P(y)}^{prior} \\
-        &= argmax_{y \in Y}\overbrace{P(x_1|y)P(x_2|y)P(x_3|y)\dots P(x_n|y)}^{likelihood}\overbrace{P(y)}^{prior} \\
-        &= argmax_{y \in Y}\overbrace{\prod_{i=0}^nP(x_i|y )}^{likelihood}\overbrace{P(y)}^{prior}
+\hat{y} &= \argmax_{y \in Y}P(y|x) \\ 
+        &= \argmax_{y \in Y}\overbrace{P(x|y)}^{likelihood}\overbrace{P(y)}^{prior} \\
+        &= \argmax_{y \in Y}\overbrace{P(x_1x_2x_3\dots x_n|y)}^{likelihood}\overbrace{P(y)}^{prior} \\
+        &= \argmax_{y \in Y}\overbrace{P(x_1|y)P(x_2|y)P(x_3|y)\dots P(x_n|y)}^{likelihood}\overbrace{P(y)}^{prior} \\
+        &= \argmax_{y \in Y}\overbrace{\prod_{i=0}^nP(x_i|y )}^{likelihood}\overbrace{P(y)}^{prior}
 \end{aligned}$$
 As usual, we take log on the probability:
-$$\hat{y} = argmax_{y \in Y}\overbrace{\sum_{i=0}^nlog(P(x_i|y))}^{likelihood} + \overbrace{log(P(y))}^{prior}$$
+$$\hat{y} = \argmax_{y \in Y}\overbrace{\sum_{i=0}^nlog(P(x_i|y))}^{likelihood} + \overbrace{log(P(y))}^{prior}$$
 
 #### Multinomial
 $P(x_i|y) = \frac {count(x_i, y) + 1} {\sum_{x_i \in V}(count(x_i, y) + 1)} = \frac {count(x_i, y) + 1} {\sum_{x_i \in V}(count(x_i, y)) + |V|}$

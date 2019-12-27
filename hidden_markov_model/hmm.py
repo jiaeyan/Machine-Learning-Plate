@@ -71,7 +71,7 @@ class HiddenMarkovModel:
     
     def viterbi(self, x):
         V = np.zeros((self.N, len(x)))
-        B = np.zeros((self.N, len(x)))
+        B = np.zeros((self.N, len(x)), dtype=int)
         V[:, 0] = self.Prior * self.Emit[:, x[0]]
         for t in range(1, len(x)):               # for each t, for each state, choose the biggest from all prev-state * transition * ob, remember the best prev
             for s in range(self.N):
@@ -85,7 +85,7 @@ class HiddenMarkovModel:
         path = []
         for t in range(B.shape[1] - 1, -1, -1):
             path.append(self._S_dict[best])
-            best = int(B[best, t])
+            best = B[best, t]
         return path[::-1]
 
     def featurize(self, x):

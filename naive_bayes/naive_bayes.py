@@ -148,6 +148,7 @@ def generate_news_data():
     return split_data(X_train), split_data(X_val), Y_train, Y_val
 
 def generate_iris_data():
+    """ For Gaussian NB. """
     from sklearn.datasets import load_iris
     iris = load_iris()
     X = iris.data

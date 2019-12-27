@@ -4,17 +4,18 @@ This is a plate of machine learning algorithm implementation tastes made of Pyth
 
 1. Linear Regression: BGD, SGD, MBGD
 2. Logistic Regression: BGD, SGD, MBGD
-3. Maximum Entropy Method
+3. MaxEnt (Maximum Entropy Method)
 4. Perceptron
-5. K-Nearest Neighbor
+5. KNN _(K-Nearest Neighbor)_
 6. Naive Bayes Classifier: Multinomial, Bernoulli, Gaussian
-7. Hidden Markov Model: Forward, Backward, Baum-Welch algorithms
-8. _more algorithms on the way..._  
+7. HMM _(Hidden Markov Model)_: Forward, Backward, Viterbi, Baum-Welch algorithms
+8. EM _(Expectation Maximization)_: 3-coin problem
+9. _more algorithms on the way..._  
 
 ## Highlights
 * __Independence__: each algorithm file is independent, no class inheritance, no function overload, no shared util functions, even many of them look exactly the same. We break the thumb of rule of programming here, so you can clone this repo and just grab any single implementation you want and directly embed to your own codes!
 * __Plainness__: we use very plain codes to illustrate each algorithm, and prefer to use more straightforward function calls than high level syntax sugars from 3rd party libs, which could be hard to get their purposes from names quickly.
-* __Cheatsheet__: it is not enough to understand an algorithm merely through its impelmentation codes, since most of them are results from theories, e.g., the weight update formula. We add a formula cheatsheet along with every algorithm so you could pick up the math quickly!
+* __Cheatsheet__: it is not enough to understand an algorithm merely through its impelmentation codes, since most of them are results from theories, e.g., the weight update formula. We add a math cheatsheet along with every algorithm so you could pick up the math quickly!
 
 ## Conventions
 * X: a data matrix, shaped as (|num_x|, |num_features|) 
@@ -32,6 +33,6 @@ This is a plate of machine learning algorithm implementation tastes made of Pyth
 * α: the learning rate for gradient descent
 
 ## Notes
-You may see a mass in the math Markdown cheatsheets, since GitHub doesn't support Math LaTex formatting. If you would like to view the LaTex formatted math cheatsheets in Markdown, plese do followings:
-* Local: In __VS code__, stall __Markdown All in One__ and __Markdown Preview Enhanced__ extensions.
+You may see a mass in the math Markdown cheatsheets, since GitHub doesn't support Math LaTex formatting. If you would like to view the LaTex formatted math cheatsheets in Markdown, plese do the followings:
+* Local: In __VS code__, install __Markdown All in One__ and __Markdown Preview Enhanced__ extensions.
 * Online (_GitHub_): In __Chrome__, install __MathJax Plugin for Github__ extension.

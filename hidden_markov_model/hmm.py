@@ -8,11 +8,12 @@ random.seed(42)
 
 class HiddenMarkovModel:
     def __init__(self):
+        self.Prior = None
         self.Trans = None
         self.Emit = None
-        self.Prior = None
 
         self.S_dict = None
+        self._S_dict = None
         self.O_dict = None
         self.N = None
         self.M = None
@@ -27,18 +28,18 @@ class HiddenMarkovModel:
         self.M = len(self.O_dict)
 
         # add-1 laplace for all metrices
+        self.Prior = np.zeros(self.N) + 1
         self.Trans = np.zeros((self.N, self.N)) + 1
         self.Emit = np.zeros((self.N, self.M)) + 1
-        self.Prior = np.zeros(self.N) + 1
 
     def train(self, X, Y):
         self.load_data(X, Y)
 
         for x, y in zip(X, Y):
-            o_last, s_first, s_last = self.O_dict[x[-1]], self.S_dict[y[0]], self.S_dict[y[-1]]
-            self.Prior[s_first] += 1
-            self.Trans[s_last, s_last] += 1
-            self.Emit[s_last, o_last] += 1
+            o_end, s_start, s_end = self.O_dict[x[-1]], self.S_dict[y[0]], self.S_dict[y[-1]]
+            self.Prior[s_start] += 1
+            self.Trans[s_end, s_end] += 1
+            self.Emit[s_end, o_end] += 1
 
             for i in range(len(x) - 1):
                 o1, s1, s2 = self.O_dict[x[i]], self.S_dict[y[i]], self.S_dict[y[i + 1]]
@@ -131,23 +132,22 @@ if __name__ == '__main__':
     hmm.train(X_train, Y_train)
     # hmm.score(X_val, Y_val)
 
-    print(np.sum(hmm.Trans, axis=1))
-    print(np.sum(hmm.Emit, axis=1))
-    print(np.sum(hmm.Prior))
+    # print(np.sum(hmm.Trans, axis=1))
+    # print(np.sum(hmm.Emit, axis=1))
+    # print(np.sum(hmm.Prior))
 
     def test_(X, Y):
         correct_num = 0.0
         token_num = 0.0
         for x, y in zip(X[10:11], Y[10:11]):
-            print(x)
+            print('instance:',x)
             result = hmm.decode(x)
-            print(y)
-            print(result)
+            print('true labels:', y)
+            print('predicted labels:', result)
             ch_x = hmm.featurize(x)
             B = hmm.backward(ch_x)
-            # print(sum(B[:, 0] * hmm.Prior))
-            print(sum(B[:, 0] * hmm.Prior * hmm.Emit[:, ch_x[0]]))
-            print(hmm.likelihood(x))
+            print('backward prob:', sum(B[:, 0] * hmm.Prior * hmm.Emit[:, ch_x[0]]))
+            print('forward prob:', hmm.likelihood(x))
             print()
             token_num += len(x)
             for i in range(len(x)):

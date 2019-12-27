@@ -30,3 +30,8 @@ This is a plate of machine learning algorithm implementation tastes made of Pyth
 * z: a scalar showing sums over weights dot x features
 * b: a bias
 * α: the learning rate for gradient descent
+
+## Notes
+You may see a mass in the math Markdown cheatsheets, since GitHub doesn't support Math LaTex formatting. If you would like to view the LaTex formatted math cheatsheets in Markdown, plese do followings:
+* Local: In __VS code__, stall __Markdown All in One__ and __Markdown Preview Enhanced__ extensions.
+* Online (_GitHub_): In __Chrome__, install __MathJax Plugin for Github__ extension.

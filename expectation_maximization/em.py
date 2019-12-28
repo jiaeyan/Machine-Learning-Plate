@@ -35,6 +35,9 @@ class EM:
         c = np.sum((1 - eps) * data) / np.sum(1 - eps)
         return a, b, c
 
+    def is_converge(self):
+        pass
+
 if __name__ == '__main__':
     data = [1, 1, 0, 1, 0, 0, 1, 0, 1, 1]
     em = EM()

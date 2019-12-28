@@ -61,6 +61,7 @@ Q(\theta, \theta^{(i)}) &= \textcolor{blue}{\sum_{j=0}^n}\sum_{z \in Z}\textcolo
 
 For 3-coin problem specifically, the probabilities of each component in the $Q$ function are as follow:  
 
+First compute some necessary aux values:
 $$\begin{aligned}
 P(y_j,z|\theta^{(i)}) &= P(z|\theta^{(i)})P(y_j|z,\theta^{(i)}) \\ 
 &= \begin{cases}
@@ -77,6 +78,8 @@ $$\begin{aligned} P(y_j|\theta^{(i)})
 &=P(z=1|\theta^{(i)})P(y_j|z=1,\theta^{(i)})+P(z=0|\theta^{(i)})P(y_j|z=0,\theta^{(i)}) \\
 &=\begin{cases} a^{(i)}b^{(i)}+(1-a^{(i)})c^{(i)}, & \text{if }y_j=1;\\ a^{(i)}(1-b^{(i)})+(1-a^{(i)})(1-c^{(i)}), & \text{if }y_j=0. \end{cases} \\
 &=a^{(i)}(b^{(i)})^{y_j}(1-b^{(i)})^{1-y_j}+(1-a^{(i)})(c^{(i)})^{y_j}(1-c^{(i)})^{1-y_j} \end{aligned}$$
+
+Then comes to the key components:
 
 $$\begin{aligned}
 \textcolor{blue}{\underline{P(z|y_j,\theta^{(i)})}} &= \frac {P(y_j, z|\theta^{(i)})} {P(y_j|\theta^{(i)})} \\
@@ -98,7 +101,7 @@ Note $a, b, c$ here are unkown parameters from $\theta$, the target that we are 
 So now we get the $Q$ function as:  
 
 $$\begin{aligned}
-Q(\theta, \theta^{(i)}) &= \textcolor{blue}{\sum_{j=0}^n}\sum_{z \in Z}\textcolor{blue}{\underline{P(z|y_j, \theta^{(i)})}}log \textcolor{blue}{\underline{P(y_j, z|\theta)}} \\
+Q(\theta, \theta^{(i)}) &= \sum_{j=0}^n\sum_{z \in Z} P(z|y_j, \theta^{(i)}) log P(y_j, z|\theta) \\
 &= \sum_{j=0}^n\left[ P(z=1|y_j, \theta^{(i)})logP(y_j, z=1|\theta) + P(z=0|y_j, \theta^{(i)})logP(y_j,z=0|\theta)\right] \\
 & = \sum_{j=0}^n \left[ \mu_j^{(i)} \times ab^{y_j}(1-b)^{1-y_j} + (1 - \mu_j^{(i)}) \times (1-a)c^{y_j}(1-c)^{1-y_j} \right]
 \end{aligned}$$

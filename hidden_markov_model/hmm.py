@@ -27,7 +27,7 @@ class HiddenMarkovModel:
         self.N = len(self.S_dict)
         self.M = len(self.O_dict)
 
-        # add-1 laplace for all metrices
+        # add-1 laplace to all metrices
         self.Prior = np.zeros(self.N) + 1
         self.Trans = np.zeros((self.N, self.N)) + 1
         self.Emit = np.zeros((self.N, self.M)) + 1
@@ -53,8 +53,8 @@ class HiddenMarkovModel:
 
     def forward(self, x):
         F = np.zeros((self.N, len(x)))
-        F[:, 0] = self.Prior * self.Emit[:, x[0]]    # initialize all states from Prior
-        for t in range(1, len(x)):  # for each t, for each state, sum(all prev-state * transition * ob)
+        F[:, 0] = self.Prior * self.Emit[:, x[0]]
+        for t in range(1, len(x)):
             for s in range(self.N):
                 paths = F[:, t-1] * self.Trans[:, s] * self.Emit[s, x[t]]
                 F[s, t] = np.sum(paths)
@@ -73,7 +73,7 @@ class HiddenMarkovModel:
         V = np.zeros((self.N, len(x)))
         B = np.zeros((self.N, len(x)), dtype=int)
         V[:, 0] = self.Prior * self.Emit[:, x[0]]
-        for t in range(1, len(x)):               # for each t, for each state, choose the biggest from all prev-state * transition * ob, remember the best prev
+        for t in range(1, len(x)):
             for s in range(self.N):
                 paths = V[:, t-1] * self.Trans[:, s] * self.Emit[s, x[t]]
                 V[s, t] = np.max(paths)
@@ -106,9 +106,80 @@ class HiddenMarkovModel:
         Y_true = [s for y in Y for s in y]
         Y_pred = [s for x in X for s in self.decode(x)]
         print(classification_report(Y_true, Y_pred))
+    
+    def learn(self, X, Y, iterations=100):
+        self.load_data(X, Y)
+        self.init_parameters()
+        X = [self.featurize(x) for x in X]
 
-    def learn(self):
-        pass
+        for _ in range(iterations):
+            Gammas, Ksis = self.E_step(X)
+            self.M_step(X, Gammas, Ksis)
+    
+    def init_parameters(self):
+        self.Prior = np.zeros(self.N) + 1/self.N
+        self.Trans = np.zeros((self.N, self.N)) + 1/self.N
+
+        # To make some init parameters unequal. 
+        # BW algorithm works poor with all equal init parameters.
+        Sum = self.Trans[0][0] + self.Trans[0][-1]
+        self.Trans[0][0], self.Trans[0][-1] = Sum / 3, 2 * Sum / 3
+
+        self.Emit = np.zeros((self.N, self.M)) + 1/self.M
+    
+    def E_step(self, X):
+        Gammas = []
+        Ksis = []
+        for x in X:
+            F = self.forward(x)
+            B = self.backward(x)
+            Gamma = self.gamma(F, B)
+            Gammas.append(Gamma)
+            Ksi = self.ksi(x, F, B)
+            Ksis.append(Ksi)
+        return Gammas, Ksis
+
+    def gamma(self, F, B):
+        gamma = F * B
+        gamma = gamma / np.sum(gamma, 0)
+        return gamma
+    
+    def ksi(self, x, F, B):
+        ksi = np.zeros((self.N, self.N, len(x) - 1))
+        for t in range(len(x) - 1):
+            for i in range(self.N):
+                for j in range(self.N):
+                    ksi[i, j, t] = F[i, t] * self.Trans[i, j] * self.Emit[j, x[t+1]] * B[j, t+1]
+            ksi[:, :, t] /= np.sum(np.sum(ksi[:, :, t], 1), 0)	
+        return ksi
+
+    def M_step(self, X, Gammas, Ksis):
+        self.learn_prior(X, Gammas)
+        self.learn_trans(X, Gammas, Ksis)
+        self.learn_emit(X, Gammas)
+    
+    def learn_prior(self, X, Gammas):
+        for i in range(self.N):
+            gammas = np.sum(Gammas[xid][i, 0] for xid in range(len(X)))
+            self.Prior[i] = gammas / len(X)
+    
+    def learn_trans(self, X, Gammas, Ksis):
+        for i in range(self.N):
+            denominator = np.sum(np.sum(Gammas[xid][i, :len(x) - 1]) for xid, x in enumerate(X))
+            for j in range(self.N):
+                numerator = np.sum(np.sum(Ksis[xid][i, j, :len(x) - 1]) for xid, x in enumerate(X))
+                self.Trans[i, j] = numerator / denominator
+    
+    def learn_emit(self, X, Gammas):
+        for j in range(self.N):
+            denominator = np.sum(np.sum(Gammas[xid][j]) for xid in range(len(X)))
+            for k in range(self.M):
+                numerator = 0.0
+                for xid, x in enumerate(X):
+                    for t in range(len(x)):
+                        if x[t] == k:
+                            numerator += Gammas[xid][j, t]
+                self.Emit[j, k] = numerator / denominator
 
 def generate_data():
     from nltk.corpus import brown
@@ -125,33 +196,46 @@ def generate_data():
     X_train, X_val, Y_train, Y_val = train_test_split(X, Y)
     return X_train, X_val, Y_train, Y_val
 
+def test_learn():
+    hmm = HiddenMarkovModel()
+    X = [
+        ['he', 'want', 'to', 'eat', 'food'],
+        ['John', 'eat', 'food'],
+        ['he', 'want', 'food'],
+        ['John', 'want', 'food']
+    ]
+    Y = [
+        ['PRON', 'VB', 'TO', 'VB', 'NN', 'NN', 'VB', 'PRON', 'VB', 'NN', 'TO', 'VB'],
+        ['NNP', 'VB', 'NN'],
+        ['PRON', 'VB', 'NN'],
+        ['NNP', 'VB', 'NN']
+    ]
+    hmm.learn(X, Y, iterations=50)
+    print(hmm.decode(['John', 'want', 'to', 'eat']))
 
-if __name__ == '__main__':
+def test_train():
     X_train, X_val, Y_train, Y_val = generate_data()
     hmm = HiddenMarkovModel()
     hmm.train(X_train, Y_train)
-    # hmm.score(X_val, Y_val)
 
-    # print(np.sum(hmm.Trans, axis=1))
-    # print(np.sum(hmm.Emit, axis=1))
-    # print(np.sum(hmm.Prior))
+    print(np.sum(hmm.Trans, axis=1))
+    print(np.sum(hmm.Emit, axis=1))
+    print(np.sum(hmm.Prior))
 
-    def test_(X, Y):
-        correct_num = 0.0
-        token_num = 0.0
-        for x, y in zip(X[10:11], Y[10:11]):
-            print('instance:',x)
-            result = hmm.decode(x)
-            print('true labels:', y)
-            print('predicted labels:', result)
-            ch_x = hmm.featurize(x)
-            B = hmm.backward(ch_x)
-            print('backward prob:', sum(B[:, 0] * hmm.Prior * hmm.Emit[:, ch_x[0]]))
-            print('forward prob:', hmm.likelihood(x))
-            print()
-            token_num += len(x)
-            for i in range(len(x)):
-                if y[i] == result[i]:
-                    correct_num += 1
-        print ('\nAccuracy: ' + str(correct_num / token_num))
-    test_(X_val, Y_val)
+    x = X_val[0]
+    y = Y_val[0]
+    print('Instance:', x)
+    print('True labels:', y)
+    print('Predicted labels:', hmm.decode(x))
+    ch_x = hmm.featurize(x)
+    B = hmm.backward(ch_x)
+    print('Forward prob:', hmm.likelihood(x))
+    print('Backward prob:', sum(B[:, 0] * hmm.Prior * hmm.Emit[:, ch_x[0]]))
+    print()
+
+    hmm.score(X_val[:10], Y_val[:10])
+    print(hmm.decode(['John', 'want', 'to', 'eat']))
+
+if __name__ == '__main__':
+    # test_learn()
+    test_train()

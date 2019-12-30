@@ -16,9 +16,9 @@ This is a plate of machine learning algorithm implementation tastes made of Pyth
 * __Independence__: each algorithm file is independent, no class inheritance, no function overload, no shared util functions, even many of them look exactly the same. We break the thumb of rule of programming here, so you can clone this repo and just grab any single implementation you want and directly embed to your own codes!
 * __Plainness__: we use very plain codes to illustrate each algorithm, and prefer to use more straightforward function calls than high level syntax sugars from 3rd party libs, which could be hard to get their purposes from names quickly.
 * __Cheatsheet__: it is not enough to understand an algorithm merely through its impelmentation codes, since most of them are results from theories, e.g., the weight update formula. We add a math cheatsheet along with every algorithm so you could pick up the math quickly!  
-  * blue: something you should take notice
-  * Red: something will be removed
-  * Green: something added to the math
+  * blue: something that you should take notice in current step
+  * red: something that is removed in the next step
+  * green: something that is added to the math in current step
 
 ## Conventions
 * X: a data matrix, shaped as (|num_x|, |num_features|) 

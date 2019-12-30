@@ -16,7 +16,7 @@ With HMM $\lambda = (A, B, \pi)$, compute the likelihood of observation sequence
 
 ##### 1. Naive approach
 $O$: the observed sequence  
-$S$: the possible hidden state sequence  
+$S$: one possible hidden state sequence  
 $$P(O, S) = P(O|S)P(S) = \prod_{i=1}^TP(o_i|s_i) \times \prod_{i=1}^TP(s_i|s_{i-1})\times \pi_{s_0}$$
 Now we can compute the probability of the observed sequence $O$ with all possible hidden state sequences by marginal probability:
 $$\begin{aligned}

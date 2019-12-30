@@ -10,7 +10,7 @@ However there is __no closed form solution__, and this likelihood is hard to max
 * hidden variable $Z$ is unknown
 * there is log of sum/product  
 
-Instead of resolving $\theta$ all at once, we maximize it by iteration of updating $\theta$, so $L(\theta) > L(\theta^{(i)})$:  
+Instead of resolving $\theta$ all at once, we maximize it by __iteration of updating $\theta$__, so $L(\theta) > L(\theta^{(i)})$:  
 $$\begin{aligned}
 L(\theta) - L(\theta^{(i}) &= log\left( \sum_ZP(Y|Z, \theta)P(Z|\theta) \right) - logP(Y|\theta^{(i)}) \\
 &= \textcolor{blue}{log}\left( \textcolor{blue}{\sum_Z} \textcolor{green} {P(Z|Y,\theta^{(i)})} \frac {P(Y|Z, \theta)P(Z|\theta)} {\textcolor{green} {P(Z|Y, \theta^{(i)})}} \right) - logP(Y|\theta^{(i)}) \\
@@ -38,14 +38,17 @@ $$\begin{aligned}
 \end{aligned}$$
 * We can omit the red parts because they are fixed constant numbers (e.g., $\theta^{(i)}$) in terms of computing $\theta$.  
 
-So far we get the $Q$ function, which means the expectation of the conditional probability distribution of unknown states $Z$, given observed $Y$ and current $\theta^{(i)}$:
+So far we get the $Q$ function, which means the expectation of the conditional probability distribution of unknown states $Z$, given observed $Y$ and current $\theta^{(i)}$:  
+
 $$\begin{aligned}
 Q(\theta, \theta^{(i)}) &= \sum_ZP(Z|Y, \theta^{(i)})logP(Y, Z|\theta) \\
-                        &= E_{Z|Y,\theta_n}[logP(Y,Z|\theta)]
+                        &= E_{Z|Y,\theta^{(i)}}[logP(Y,Z|\theta)]
 \end{aligned}$$
 
+For any problem that should be resolved by EM, it should always be abstracted to this $Q$ function.  
+
 ### 3-coin problem
-Each event/experiment is independent from each other. The likelihood of 1 event is $P(Y|\theta)$, for a set of $n$ events instead, we have:  
+Each event/experiment is independent from each other. The likelihood of 1 event is $P(Y|\theta)$, so for a set of $n$ events instead, we have:  
 $$\begin{aligned}
 L(\theta) &= \prod_{j=0}^nP(y_j|\theta) \\
           &= \sum_{j=0}^nlogP(y_j|\theta) \\
@@ -98,7 +101,7 @@ ab^{y_j}(1-b)^{1-y_j} &\text{if }z=1; \\
 
 Note $a, b, c$ here are unkown parameters from $\theta$, the target that we are going to compute in the task.  
 
-So now we get the $Q$ function as:  
+So now we get the true $Q$ function for 3-coin problem as:  
 
 $$\begin{aligned}
 Q(\theta, \theta^{(i)}) &= \sum_{j=0}^n\sum_{z \in Z} P(z|y_j, \theta^{(i)}) log P(y_j, z|\theta) \\
@@ -112,7 +115,7 @@ So for E step, the key point is to compute $\mu_j^{(i)}$.
 $$\mu_j^{(i+1)} = \frac {a^{(i)}(b^{(i)})^{y_j}(1-b^{(i)})^{1-y_j}} {a^{(i)}(b^{(i)})^{y_j}(1-b^{(i)})^{1-y_j} + (1-a^{(i)})(c^{(i)})^{y_j}(1-c^{(i)})^{1-y_j}}$$
 
 #### M-step
-Take derivation from $Q(\theta, \theta^{(i)})$ by each parameter in $\theta$, to compute the new $a^{(i+1)}, b^{(i+1)}, c^{(i+1)}$, then get the parameter update formula:
+Take derivation from $Q(\theta, \theta^{(i)})$ by each parameter in $\theta$, to compute the new $a^{(i+1)}, b^{(i+1)}, c^{(i+1)}$, then get the parameter update formula as below:
 
 $$a^{(i+1)} = \frac 1 n \sum_{j=1}^n\mu_j^{(i+1)}$$
 $$b^{(i+1)} = \frac {\sum_{j=1}^n\mu_j^{(i+1)}y_j} {\sum_{j=1}^n\mu_j^{(i+1)}}$$

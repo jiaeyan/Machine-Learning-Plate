@@ -69,4 +69,94 @@ Besides to the regular probability matrix like forward algorith, we need another
   $$\hat P = \max_{i=1}^Nv_T(i)$$
   $$\hat s_T = \argmax_{i=1}^Nv_T(i)$$  
 
-#### Learning
+#### Learning  
+Given the observation sequences $\sum_{i=0}^nO$, and a set of labels $\sum_{j=0}^mS$， compute the HMM parameters $\lambda = (A, B, \pi)$.  
+This could be resolved by EM algorithm.  
+##### 1. Expectations  
+1. Given observation $O$ and and the $\lambda = (A, B, \pi)$, we have the probability of being at state $s_i$ at time $t$ _(no transition)_:  
+   $$\gamma_t(i) = P(i_t = s_i | O,\lambda) = \frac{P(i_t = s_i ,O|\lambda)}{P(O|\lambda)} = \frac{P(i_t = s_i ,O|\lambda)}{\sum\limits_{j=0}^NP(i_t = s_j ,O|\lambda)}$$  
+   By definitions of forward and backward algorithms:
+   $$P(i_t = s_i ,O|\lambda) = \alpha_t(i)\beta_t(i)$$  
+   Why?  
+   $$\alpha_t(i) = P(o_1,o_2,...o_t, i_t =s_i | \lambda)$$  
+   $$\beta_t(i) = P(o_{t+1},o_{t+2},...o_T| i_t =s_i, \lambda)$$  
+   $$\begin{aligned}
+   \alpha_t(i)\beta_t(i) &= P(o_1,o_2,...o_t, i_t =s_i | \lambda) \times P(o_{t+1},o_{t+2},...o_T| i_t =s_i , \lambda) \\
+   &= P(i_t = s_i, o_1,o_2,...o_t, o_{t+1},o_{t+2},...o_T |\lambda) \\
+   &= P(i_t = s_i, O|\lambda)
+   \end{aligned}$$  
+   This is probability of being at state $i$ at time $t$; we can sum over all probabilities of being at all states at this $t$, so we have:
+   $$\gamma_t(i) = \frac {\alpha_t(i)\beta_t(i)}{\sum\limits_{j=1}^N \alpha_t(j)\beta_t(j)}$$
+2. Given observation $O$ and and the $\lambda = (A, B, \pi)$, we have the probability of being at state $s_i$ at time $t$, and at state $s_j$ at time $t + 1$ _(transition)_:
+   $$\xi_t(i,j) = P(i_t = s_i, i_{t+1}=s_j| O,\lambda) = \frac{P(i_t = s_i, i_{t+1}=s_j, O|\lambda)}{P(O|\lambda)} =\frac{P(i_t = s_i, i_{t+1}=s_j, O|\lambda)}{\sum\limits_{k=0}^N\sum\limits_{l=0}^NP(i_t = s_k, i_{t+1}=s_l, O|\lambda)}$$  
+   By definitions of forward and backward algorithms:  
+   $$P(i_t = s_i, i_{t+1}=s_j, O|\lambda) = \alpha_t(i)a_{ij}b_j(o_{t+1})\beta_{t+1}(j)$$  
+   Why?  
+   $$\alpha_t(i)a_{ij}b_j(o_{t+1})\beta_{t+1}(j) = P(o_1,o_2,...o_t, i_t =s_i | \lambda) \times a_{ij} \times b_j(o_{t+1}) \times P(o_{t+2},o_{t+3},...o_T| i_t =s_j, \lambda)$$  
+   We can sum over all possible state transitions at this time $t$, so we have:  
+   $$\xi_t(i,j) = \frac{\alpha_t(i)a_{ij}b_j(o_{t+1})\beta_{t+1}(j)}{\sum\limits_{k=0}^N\sum\limits_{l=0}^N\alpha_t(k)a_{kl}b_l(o_{t+1})\beta_{t+1}(l)}$$  
+3. In all, we have:  
+   * Expectation of being at state $i$ given observation $O$: $\sum\limits_{t=1}^T\gamma_t(i)$  
+   * Expectation of transiting from state $i$ given observation $O$: $\sum\limits_{t=1}^{T-1}\gamma_t(i)$
+   * Expectation of transiting from state $i$ to $j$ given observation $O$: $\sum\limits_{t=1}^{T-1}\xi_t(i,j)$  
+
+##### 2. Maximization  
+$Q$ function of EM (Baum-Welch):  
+$$\begin{aligned}
+Q(\lambda, \overline{\lambda}) &= \sum_{I}P(I|O,\overline{\lambda})logP(O,I|\lambda) \\
+&= \sum_{I} \frac {P(O, I|\overline{\lambda})}{\textcolor{red}{P(O|\overline{\lambda})}}logP(O,I|\lambda) \\
+&= \sum_{I}P(O, I|\overline{\lambda})logP(O,I|\lambda)
+\end{aligned}$$  
+So the $\overline{\lambda}$ we want could be computed from:  
+$$\overline{\lambda} = \argmax_{\lambda}\sum\limits_{I}P(O,I|\overline{\lambda})logP(O,I|\lambda)$$  
+Since 
+$$P(O,I|\lambda) = \prod_{d=1}^D\pi_{i_1^{(d)}}b_{i_1^{(d)}}(o_1^{(d)})a_{i_1^{(d)}i_2^{(d)}}b_{i_2^{(d)}}(o_2^{(d)})...a_{i_{T-1}^{(d)}i_T^{(d)}}b_{i_T^{(d)}}(o_T^{(d)})$$  
+Plug in and we get:  
+$$\overline{\lambda} = \argmax_{\lambda}\sum\limits_{d=1}^D\sum\limits_{I}P(O,I|\overline{\lambda}) \left[ log\pi_{i_1} + \sum\limits_{t=1}^{T-1}log\;a_{i_t,i_{t+1}} + \sum\limits_{t=1}^Tlog b_{i_t}(o_t) \right]$$  
+We could maximize 3 components 1 by 1:  
+* $$\overline{\pi_i} = \argmax_{\pi_{i_1}} \sum\limits_{d=1}^D\sum\limits_{I}P(O,I|\overline{\lambda})log\pi_{i_1} = \argmax_{\pi_{i}} \sum\limits_{d=1}^D\sum\limits_{i=1}^NP(O,i_1^{(d)} =i|\overline{\lambda})log\pi_{i}$$  
+  Since $\sum\limits_{i=1}^N\pi_i =1$ as a constraint, we apply Lagrange Multiplier Method here:  
+  $$\overline{\pi_i} = \argmax_{\pi_{i}}\sum\limits_{d=1}^D\sum\limits_{i=1}^NP(O,i_1^{(d)} =i|\overline{\lambda})log\pi_{i} + \gamma(\sum\limits_{i=1}^N\pi_i -1)$$  
+  Take derivation on above and make it equal to 0, we have:  
+  $$\sum\limits_{d=1}^DP(O,i_1^{(d)} =i|\overline{\lambda}) + \gamma\pi_i = 0$$  
+  Make $i$ from 1 to $N$ and sum them all over, we have:  
+  $$\sum\limits_{d=1}^D\sum\limits_{n=1}^NP(O,i_1^{(d)} = n|\overline{\lambda}) + \sum\limits_{n=1}^N\gamma\pi_n = 0$$  
+  Again since $\sum\limits_{i=1}^N\pi_i =1$, and $\sum\limits_{n=1}^NP(O,i_1 = n|\overline{\lambda}) = P(O|\overline{\lambda})$ _(marginal probability of $O$)_. Plug in these two we have:  
+  $$\begin{aligned}
+  \sum\limits_{d=1}^D\sum\limits_{n=1}^NP(O,i_1^{(d)} = n|\overline{\lambda}) + \gamma &= 0\\
+  \sum\limits_{d=1}^DP(O|\overline{\lambda}) + \gamma &= 0
+  \end{aligned}$$  
+  Now we have value of $\gamma$, plug in $\gamma$ we have:  
+  $$\pi_i =\frac{\sum\limits_{d=1}^DP(O,i_1^{(d)} =i|\overline{\lambda})}{\sum\limits_{d=1}^DP(O|\overline{\lambda})} = \frac{\sum\limits_{d=1}^DP(O,i_1^{(d)} =i|\overline{\lambda})}{DP(O|\overline{\lambda})} = \frac{\sum\limits_{d=1}^DP(i_1^{(d)} =i|O, \overline{\lambda})}{D} = \frac{\sum\limits_{d=1}^DP(i_1^{(d)} =i|O^{(d)}, \overline{\lambda})}{D}$$  
+  Since in the Expectation step we have:  
+  $$P(i_1^{(d)} =i|O^{(d)}, \overline{\lambda}) = \gamma_1^{(d)}(i)$$  
+  So we have:  
+  $$\pi_i = \frac{\sum\limits_{d=1}^D\gamma_1^{(d)}(i)}{D}$$
+* $$\overline{a_{ij}} = \argmax_{a_{ij}}\sum\limits_{d=1}^D\sum\limits_{I}\sum\limits_{t=1}^{T-1}P(O,I|\overline{\lambda})log\;a_{i_t,i_{t+1}} = \sum\limits_{d=1}^D\sum\limits_{i=1}^N\sum\limits_{j=1}^N\sum\limits_{t=1}^{T-1}P(O,i_t^{(d)} = i, i_{t+1}^{(d)} = j|\overline{\lambda})loga_{ij}$$  
+  We have $\sum\limits_{j=1}^Na_{ij} =1$, use Lagrange Multiplier Method and take derivation and get:  
+  $$\begin{aligned}
+  a_{ij} &= \frac{\sum\limits_{d=1}^D\sum\limits_{t=1}^{T-1}P(O^{(d)}, i_t^{(d)} = i, i_{t+1}^{(d)} = j|\overline{\lambda})}{\sum\limits_{d=1}^D\sum\limits_{t=1}^{T-1}P(O^{(d)}, i_t^{(d)} = i|\overline{\lambda})} \\
+  &= \frac {\frac {\sum\limits_{d=1}^D\sum\limits_{t=1}^{T-1}P(O^{(d)}, i_t^{(d)} = i, i_{t+1}^{(d)} = j|\overline{\lambda})}{\textcolor{green}{\sum\limits_{d=1}^DP(O^{(d)}|\overline{\lambda}))}}} {
+      \frac 
+      {\sum\limits_{d=1}^D\sum\limits_{t=1}^{T-1}P(O^{(d)}, i_t^{(d)} = i|\overline{\lambda})}
+      {\textcolor{green}{\sum\limits_{d=1}^DP(O^{(d)}|\overline{\lambda}))}}
+  } \\
+  &= \frac 
+  {\sum\limits_{d=1}^D\sum\limits_{t=1}^{T-1}P(i_t^{(d)} = i, i_{t+1}^{(d)} = j|O^{(d)}, \overline{\lambda})} 
+  {\sum\limits_{d=1}^D\sum\limits_{t=1}^{T-1}P(i_t^{(d)} = i | O,\overline{\lambda})}
+  \end{aligned}$$  
+  Again, since in Expectation step, we have:  
+  $$\xi_t^{(d)}(i,j) = P(i_t^{(d)} = i, i_{t+1}^{(d)} = j|O^{(d)}, \overline{\lambda})$$  $$\gamma_t^{(d)}(i) = P(i_t^{(d)} = i | O,\overline{\lambda})$$  
+  So we have:  
+  $$a_{ij} = \frac{\sum\limits_{d=1}^D\sum\limits_{t=1}^{T-1}\xi_t^{(d)}(i,j)}{\sum\limits_{d=1}^D\sum\limits_{t=1}^{T-1}\gamma_t^{(d)}(i)}$$
+
+* $$\overline{}\sum\limits_{d=1}^D\sum\limits_{I}\sum\limits_{t=1}^{T}P(O,I|\overline{\lambda})log\;b_{i_t}(o_t) = \sum\limits_{d=1}^D\sum\limits_{j=1}^N\sum\limits_{t=1}^{T}P(O,i_t^{(d)} = j|\overline{\lambda})log\;b_{j}(o_t)$$  
+  Since $\sum\limits_{k=1}^Mb_{j}(k) =1$, we apply the same procedure as above, and have:  
+  $$\begin{aligned}
+  b_{j}(k) &= \frac{\sum\limits_{d=1}^D\sum\limits_{t=1}^{T}P(O,i_t^{(d)} = j|\overline{\lambda})I(o_t^{(d)}=v_k)}{\sum\limits_{d=1}^D\sum\limits_{t=1}^{T}P(O,i_t^{(d)} = j|\overline{\lambda})} \\
+  &= \frac{\sum\limits_{d=1}^D\sum\limits_{t=1, o_t^{(d)}=v_k}^{T}\gamma_t^{(d)}(j)}{\sum\limits_{d=1}^D\sum\limits_{t=1}^{T}\gamma_t^{(d)}(j)}
+  \end{aligned}$$
+* In all, we have:  
+  $$\pi_i = \frac{\sum\limits_{d=1}^D\gamma_1^{(d)}(i)}{D}$$  
+  $$a_{ij} = \frac{\sum\limits_{d=1}^D\sum\limits_{t=1}^{T-1}\xi_t^{(d)}(i,j)}{\sum\limits_{d=1}^D\sum\limits_{t=1}^{T-1}\gamma_t^{(d)}(i)}$$  
+  $$b_{j}(k) = \frac{\sum\limits_{d=1}^D\sum\limits_{t=1, o_t^{(d)}=v_k}^{T}\gamma_t^{(d)}(j)}{\sum\limits_{d=1}^D\sum\limits_{t=1}^{T}\gamma_t^{(d)}(j)}$$

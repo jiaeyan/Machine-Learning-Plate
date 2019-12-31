@@ -113,8 +113,8 @@ class HiddenMarkovModel:
         X = [self.featurize(x) for x in X]
 
         for _ in range(iterations):
-            Gammas, Ksis = self.E_step(X)
-            self.M_step(X, Gammas, Ksis)
+            Gammas, Xis = self.E_step(X)
+            self.M_step(X, Gammas, Xis)
     
     def init_parameters(self):
         self.Prior = np.zeros(self.N) + 1/self.N
@@ -129,33 +129,33 @@ class HiddenMarkovModel:
     
     def E_step(self, X):
         Gammas = []
-        Ksis = []
+        Xis = []
         for x in X:
             F = self.forward(x)
             B = self.backward(x)
             Gamma = self.gamma(F, B)
             Gammas.append(Gamma)
-            Ksi = self.ksi(x, F, B)
-            Ksis.append(Ksi)
-        return Gammas, Ksis
+            Xi = self.xi(x, F, B)
+            Xis.append(Xi)
+        return Gammas, Xis
 
     def gamma(self, F, B):
-        gamma = F * B
-        gamma = gamma / np.sum(gamma, 0)
-        return gamma
+        Gamma = F * B
+        Gamma = Gamma / np.sum(Gamma, 0)
+        return Gamma
     
-    def ksi(self, x, F, B):
-        ksi = np.zeros((self.N, self.N, len(x) - 1))
+    def xi(self, x, F, B):
+        Xi = np.zeros((self.N, self.N, len(x) - 1))
         for t in range(len(x) - 1):
             for i in range(self.N):
                 for j in range(self.N):
-                    ksi[i, j, t] = F[i, t] * self.Trans[i, j] * self.Emit[j, x[t+1]] * B[j, t+1]
-            ksi[:, :, t] /= np.sum(np.sum(ksi[:, :, t], 1), 0)	
-        return ksi
+                    Xi[i, j, t] = F[i, t] * self.Trans[i, j] * self.Emit[j, x[t+1]] * B[j, t+1]
+            Xi[:, :, t] /= np.sum(np.sum(Xi[:, :, t], 1), 0)	
+        return Xi
 
-    def M_step(self, X, Gammas, Ksis):
+    def M_step(self, X, Gammas, Xis):
         self.learn_prior(X, Gammas)
-        self.learn_trans(X, Gammas, Ksis)
+        self.learn_trans(X, Gammas, Xis)
         self.learn_emit(X, Gammas)
     
     def learn_prior(self, X, Gammas):
@@ -163,11 +163,11 @@ class HiddenMarkovModel:
             gammas = np.sum(Gammas[xid][i, 0] for xid in range(len(X)))
             self.Prior[i] = gammas / len(X)
     
-    def learn_trans(self, X, Gammas, Ksis):
+    def learn_trans(self, X, Gammas, Xis):
         for i in range(self.N):
             denominator = np.sum(np.sum(Gammas[xid][i, :len(x) - 1]) for xid, x in enumerate(X))
             for j in range(self.N):
-                numerator = np.sum(np.sum(Ksis[xid][i, j, :len(x) - 1]) for xid, x in enumerate(X))
+                numerator = np.sum(np.sum(Xis[xid][i, j, :len(x) - 1]) for xid, x in enumerate(X))
                 self.Trans[i, j] = numerator / denominator
     
     def learn_emit(self, X, Gammas):

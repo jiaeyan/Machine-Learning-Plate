@@ -129,7 +129,7 @@ We could maximize 3 components 1 by 1:
   Now we have value of $\gamma$, plug in $\gamma$ we have:  
   $$\pi_i =\frac{\sum\limits_{d=1}^DP(O,i_1^{(d)} =i|\overline{\lambda})}{\sum\limits_{d=1}^DP(O|\overline{\lambda})} = \frac{\sum\limits_{d=1}^DP(O,i_1^{(d)} =i|\overline{\lambda})}{DP(O|\overline{\lambda})} = \frac{\sum\limits_{d=1}^DP(i_1^{(d)} =i|O, \overline{\lambda})}{D} = \frac{\sum\limits_{d=1}^DP(i_1^{(d)} =i|O^{(d)}, \overline{\lambda})}{D}$$  
   Since in the Expectation step we have:  
-  $$P(i_1^{(d)} =i|O^{(d)}, \overline{\lambda}) = \gamma_1^{(d)}(i)$$  
+  $$\gamma_1^{(d)}(i) = P(i_1^{(d)} =i|O^{(d)}, \overline{\lambda})$$  
   So we have:  
   $$\pi_i = \frac{\sum\limits_{d=1}^D\gamma_1^{(d)}(i)}{D}$$
 * $$\overline{a_{ij}} = \argmax_{a_{ij}}\sum\limits_{d=1}^D\sum\limits_{I}\sum\limits_{t=1}^{T-1}P(O,I|\overline{\lambda})log\;a_{i_t,i_{t+1}} = \sum\limits_{d=1}^D\sum\limits_{i=1}^N\sum\limits_{j=1}^N\sum\limits_{t=1}^{T-1}P(O,i_t^{(d)} = i, i_{t+1}^{(d)} = j|\overline{\lambda})loga_{ij}$$  

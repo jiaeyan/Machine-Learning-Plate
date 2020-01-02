@@ -10,7 +10,8 @@ This is a plate of machine learning algorithm implementation tastes made of Pyth
 6. Naive Bayes Classifier: Multinomial, Bernoulli, Gaussian
 7. HMM _(Hidden Markov Model)_: Forward, Backward, Viterbi, Baum-Welch algorithms
 8. EM _(Expectation Maximization)_: 3-coin problem
-9. _more algorithms on the way..._  
+9. Decision Tree
+10. _more algorithms on the way..._  
 
 ## Highlights
 * __Independence__: each algorithm file is independent, no class inheritance, no function overload, no shared util functions, even many of them look exactly the same. We break the thumb of rule of programming here, so you can clone this repo and just grab any single implementation you want and directly embed to your own codes!

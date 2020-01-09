@@ -2,6 +2,7 @@ from math import log2
 from collections import Counter
 from collections import defaultdict
 import numpy as np
+from sklearn.metrics import classification_report
 
 class DecisionTree:
 
@@ -36,7 +37,6 @@ class DecisionTree:
         for x, y in zip(X, Y):
             F_Y_dict[x[feature_id]].append(y)
         return -np.sum((len(y_list)/len(Y)) * log2(len(y_list)/len(Y)) for y_list in F_Y_dict.values())
-
 
     def info_gain(self, data_entropy, cond_entropy):
         return data_entropy - cond_entropy
@@ -75,8 +75,10 @@ class DecisionTree:
     def select_feature(self, X, Y):
         d_ent = self.data_entropy(Y)
         info_gain_list = []
+
         for feature_id in range(len(X[0])):
             cond_ent = self.cond_entropy(X, Y, feature_id)
+
             if self.mode == 'id3':
                 info_gain_list.append((self.info_gain(d_ent, cond_ent), feature_id))
             elif self.mode == 'c4.5':
@@ -107,9 +109,11 @@ class DecisionTree:
         return node.label
 
     def score(self, X, Y):
-        pass
+        Y_pred = [self.predict(x) for x in X]
+        print(classification_report(Y, Y_pred))
 
 def generate_data():
+    from sklearn.model_selection import train_test_split
     data = np.array([['青年', '否', '否', '一般', '否'],
             ['青年', '否', '否', '好', '否'],
             ['青年', '是', '否', '好', '是'],
@@ -126,18 +130,19 @@ def generate_data():
             ['老年', '是', '否', '非常好', '是'],
             ['老年', '否', '否', '一般', '否'],
             ])
-    X_train = data[:-2][:, :-1]
-    Y_train = data[:-2][:, -1]
-    X_val = data[-2:][:, :-1]
-    Y_val = data[-2:][:, -1]
+    X = data[:, :-1]
+    Y = data[:, -1]
+    X_train, X_val, Y_train, Y_val = train_test_split(X, Y)
+    print('Train data shape', X_train.shape)
+    print('Validation data shape', X_val.shape)
     return X_train, X_val, Y_train, Y_val
 
 if __name__ == '__main__':
     X_train, X_val, Y_train, Y_val = generate_data()
     dt = DecisionTree()
     dt.train(X_train, Y_train)
-    print(dt.predict(X_val[0]))
-    print(dt.predict(X_val[1]))
+    dt.score(X_val, Y_val)
+    # dt.score(X_train, Y_train)
     # y = np.array([['a', 'b', 'c'], ['c', 'a', 'c'], ['v', 'c', 'a'], ['d', 's', 'c']])
     # mask = np.isin(y, ['c'])
     # print(mask)

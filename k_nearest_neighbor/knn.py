@@ -1,7 +1,6 @@
 import numpy as np
 from math import sqrt
 from collections import Counter
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 
 np.random.seed(42)
@@ -37,6 +36,7 @@ class KNN:
 
 def generate_digit_data():
     from sklearn.datasets import load_digits
+    from sklearn.model_selection import train_test_split
     digits = load_digits()
     X = digits.data
     Y = digits.target

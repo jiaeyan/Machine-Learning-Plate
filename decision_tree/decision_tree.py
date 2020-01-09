@@ -4,6 +4,8 @@ from collections import defaultdict
 import numpy as np
 from sklearn.metrics import classification_report
 
+np.random.seed(42)
+
 class DecisionTree:
 
     class Node:
@@ -142,17 +144,3 @@ if __name__ == '__main__':
     dt = DecisionTree()
     dt.train(X_train, Y_train)
     dt.score(X_val, Y_val)
-    # dt.score(X_train, Y_train)
-    # y = np.array([['a', 'b', 'c'], ['c', 'a', 'c'], ['v', 'c', 'a'], ['d', 's', 'c']])
-    # mask = np.isin(y, ['c'])
-    # print(mask)
-    # print(y[mask])
-    # print(np.select(np.array([y[-1] =='c']*len(y)), y))
-    # y_np = np.array(y)
-    # print(type(y_np))
-    # a = np.array([np.delete(x, 1) for x in y])
-    # print(a[:, -1])
-    # a = [(1,'a'), (2, 'b'), (3, 'c')]
-    # b, c = list(zip(*a))
-    # print(type(b))
-    # print(c)

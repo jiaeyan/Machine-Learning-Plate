@@ -1,4 +1,4 @@
-###Model  
+### Model  
 A model to describe/classify the training instances by features.  
 It's a tree, with:
 * internal node: 
@@ -15,7 +15,7 @@ It's a tree, with:
   * all paths are mutually exclusive
   * each instance is covered by one of the paths
 
-###Steps
+### Steps
 
 * Feature selection
   How to decide which feature to use to classify? Choose the one that has the highest information gain / information gain ratio. This process is recursive, once a feature is used, it should be removed from next iteration:

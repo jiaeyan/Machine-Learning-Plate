@@ -29,7 +29,6 @@ class DecisionTree:
         # prune the tree
     
     def generate_tree(self, X, Y):
-
         # if all labels are the same, make a terminal node
         if len(set(Y)) == 1:
             return Node(is_terminal=True, label=Y[0])

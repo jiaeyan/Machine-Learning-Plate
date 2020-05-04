@@ -23,6 +23,7 @@ class DecisionTree:
         self.info_gain_threshold = info_gain_threshold
         self.mode = mode
         self.tree = None
+        self.used_feature_ids = []
     
     def train(self, X, Y):
         self.tree = self.generate_tree(X, Y)
@@ -33,12 +34,13 @@ class DecisionTree:
         if len(set(Y)) == 1:
             return Node(is_terminal=True, label=Y[0])
 
-        # if no selectable feature left, make a terminal node
-        if len(X[0]) == 0:
+        # if all features have been explored, make a terminal node
+        if len(self.used_feature_ids) == len(X[0]):
             return Node(is_terminal=True, label=Counter(Y).most_common()[0][0])
 
         # Step 1: select the feature with the highest info gain
         info_gain, best_feature_id = self.select_feature(X, Y)
+        self.used_feature_ids.append(best_feature_id)
 
         # if info gain is too small, make a terminal node
         if info_gain <= self.info_gain_threshold:
@@ -54,12 +56,13 @@ class DecisionTree:
         info_gain_list = []
 
         for feature_id in range(len(X[0])):
-            cond_ent = self.cond_entropy(X, Y, feature_id)
-            if self.mode == 'id3':
-                info_gain_list.append((self.info_gain(d_ent, cond_ent), feature_id))
-            elif self.mode == 'c4.5':
-                f_d_ent = self.f_data_entropy(X, Y, feature_id)
-                info_gain_list.append((self.info_gain_ratio(d_ent, cond_ent, f_d_ent), feature_id))
+            if feature_id not in self.used_feature_ids:
+                cond_ent = self.cond_entropy(X, Y, feature_id)
+                if self.mode == 'id3':
+                    info_gain_list.append((self.info_gain(d_ent, cond_ent), feature_id))
+                elif self.mode == 'c4.5':
+                    f_d_ent = self.f_data_entropy(X, Y, feature_id)
+                    info_gain_list.append((self.info_gain_ratio(d_ent, cond_ent, f_d_ent), feature_id))
 
         return max(info_gain_list)
 
@@ -89,10 +92,11 @@ class DecisionTree:
         node = Node(feature_id=feature_id)
         f_val_set = set(X[:, feature_id])
 
-        for f in f_val_set:
-            sub_X, sub_Y = zip(*[(np.delete(x, feature_id), y) for x, y in zip(X, Y) if x[feature_id] == f])
-            sub_tree = self.generate_tree(np.array(sub_X), np.array(sub_Y))
-            node.children[f] = sub_tree
+        for f_val in f_val_set:
+            sub_X = X[X[:, feature_id] == f_val]
+            sub_Y = Y[X[:, feature_id] == f_val]
+            sub_tree = self.generate_tree(sub_X, sub_Y)
+            node.children[f_val] = sub_tree
         
         return node
 

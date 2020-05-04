@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
+import sklearn.metrics as metrics
 
 np.random.seed(42)
 
@@ -131,6 +132,26 @@ class LinearRegression:
         self.b, self.w = theta[0], theta[1:]
 
         self.show_loss(X_train, X_val, Y_train, Y_val, 1)
+    
+    def score(self, X, Y):
+        Y_pred = self.predict(X)
+        self.regression_report(Y, Y_pred)
+    
+    def regression_report(self, Y_true, Y_pred):
+        explained_variance=metrics.explained_variance_score(Y_true, Y_pred)
+        mean_absolute_error=metrics.mean_absolute_error(Y_true, Y_pred) 
+        mse=metrics.mean_squared_error(Y_true, Y_pred) 
+        mean_squared_log_error=metrics.mean_squared_log_error(Y_true, Y_pred)
+        median_absolute_error=metrics.median_absolute_error(Y_true, Y_pred)
+        r2=metrics.r2_score(Y_true, Y_pred)
+
+        print('Explained_variance: ', round(explained_variance,4))    
+        print('Mean_squared_log_error: ', round(mean_squared_log_error,4))
+        print('Median_absolute_error: ', round(median_absolute_error))
+        print('R2: ', round(r2,4))
+        print('MAE: ', round(mean_absolute_error,4))
+        print('MSE: ', round(mse,4))
+        print('RMSE: ', round(np.sqrt(mse),4))
 
 
 def generate_parameters(num_features):
@@ -168,17 +189,17 @@ def generate_house_data():
     print('Validation data shape', X_val.shape)
     return X_train, X_val, Y_train, Y_val
 
-
 if __name__ == '__main__':
-    W, B = generate_parameters(5)
-    # X_train, X_val, Y_train, Y_val = generate_house_data()
-    X_train, X_val, Y_train, Y_val = generate_data(1000, 5, W, B)
+    # W, B = generate_parameters(5)
+    X_train, X_val, Y_train, Y_val = generate_house_data()
+    # X_train, X_val, Y_train, Y_val = generate_data(1000, 5, W, B)
     lr = LinearRegression()
     lr.train(X_train, X_val, Y_train, Y_val, mode='MBGD')
     # lr.train(X_train, X_val, Y_train, Y_val, mode='SGD')
     # lr.train(X_train, X_val, Y_train, Y_val, mode='BGD')
     # lr.train(X_train, X_val, Y_train, Y_val, mode='NE')
-    print('Pred weights:', lr.w)
-    print('True weights:', W)
-    print('Pred bias:', lr.b)
-    print('True bias:', B)
+    # print('Pred weights:', lr.w)
+    # print('True weights:', W)
+    # print('Pred bias:', lr.b)
+    # print('True bias:', B)
+    lr.score(X_val, Y_val)

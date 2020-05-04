@@ -2,7 +2,7 @@
 A model to describe/classify the training instances by features.  
 It's a tree, with:
 * internal node: 
-  * it represents a feature value
+  * it represents a feature value (doesn't to be binary, differnet from CART)
   * it represents all instances so far that have this feature value _(while they may not belong to the same class)_  
 * terminal node: 
   * it represents a class

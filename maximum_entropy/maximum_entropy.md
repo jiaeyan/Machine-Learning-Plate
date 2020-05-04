@@ -1,9 +1,11 @@
 #### Model  
+
 1. Entropy:  
 Uncertainty of a random variable.  
 $$H(X) = -\sum_{x \in X}p(x)log(p(x))$$
 When $X$ distribution is uniform, $H(X)$ is the max. The model with max entropy is the best statistical model among all possible models.  
-2. Conditional Entropy:
+
+2. Conditional Entropy:  
 Known the distribution of X, the expected uncertainty of Y.  
 $$\begin{aligned}
 H(Y|X) &= \sum_{x \in X}p(x)H(Y|X=x) \\
@@ -30,7 +32,8 @@ H(Y|X) &= \sum_{x \in X}p(x)H(Y|X=x) \\
        * $\sum_{k \in K, x \in X, y \in Y}\tilde{p}(x,y)f_k(x,y) = \sum_{k \in K, x \in X, y \in Y}\tilde{p}(x)p(y|x)f_k(x,y)$
    * $p(y|x) = argmax_pH(Y|X) = -\sum_{x \in X, y \in Y}\tilde{p}(x)p(y|x)log(p(y|x))$
    * $p(y|x) = argmin_p-H(Y|X) = \sum_{x \in X, y \in Y}\tilde{p}(x)p(y|x)log(p(y|x))$
-   * $\sum_{y \in Y}p(y|x) = 1 \rightleftharpoons 1 - \sum_{y \in Y}p(y|x) = 0$
+   * $\sum_{y \in Y}p(y|x) = 1 \rightleftharpoons 1 - \sum_{y \in Y}p(y|x) = 0$  
+  
 4. How to compute $p(y|x)$? __Lagrange multipliers__ _(tool for constraint optimization)_!
    $$\begin{aligned}
    Lag(p, w) &= -H(p) + \lambda_0(1-\sum_{y \in Y}p(y|x)) + \sum_{k \in K}\lambda_k(E_{emp}(f_k) - E_{model}(f_k)) \\

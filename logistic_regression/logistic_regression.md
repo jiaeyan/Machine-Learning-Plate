@@ -7,8 +7,8 @@ $$z_\theta(x) = \theta_0 + \theta_1x_1 + \theta_2x_2 + \theta_3x_3 + ... = \sum_
 
 #### Likelihood  
 Assume:  
-$p(y=1|x;\theta) = h_\theta(x)$
-$p(y=0|x;\theta) = 1 - h_\theta(x)$
+$p(y=1|x;\theta) = h_\theta(x)$  
+$p(y=0|x;\theta) = 1 - h_\theta(x)$  
 $p(y|x;\theta) = (h_\theta(x))^y(1-h_\theta(x))^{1-y}$
 
 Likelihood is the product of probabilities of all data (__MLE__, maximum likelihood estimation):  

@@ -1,4 +1,5 @@
 import sys
+from collections import defaultdict
 import numpy as np
 from sklearn.model_selection import train_test_split
 import sklearn.metrics as metrics
@@ -22,28 +23,30 @@ class RegressionTree:
 
     def __init__(self):
         self.tree = None
-        self.used_feature_ids = []
+        self.features = None
 
     def train(self, X, Y):
+        self.features = self.gather_features(X)
         self.tree = self.generate_tree(X, Y)
+        # prune tree
+    
+    def gather_features(self, X):
+        """
+        Returns a feature dict which indicates what feature and which of its value is still valid in next feature selection iteration. 
+        """
+        return {feature_id: {feature_val: True for feature_val in set(X[:, feature_id])} for feature_id in range(len(X[0]))}
     
     def generate_tree(self, X, Y):
         # if only 1 instancde left, return a terminal node
         if len(X) == 1:
             return Node(is_terminal=True, label=np.mean(Y))
-        
-        # if all features have been explored, return a terminal node
-        # if len(self.used_feature_ids) == len(X[0]):
-        #     return Node(is_terminal=True, label=np.mean(Y))
 
         # Step 1: feature and split point selection
         feature_id, feature_val = self.select_feature(X, Y)
 
         # no good feature selected (e.g., chosen feature has only 1 value)
-        # if not feature_id:
-        #     return Node(is_terminal=True, label=np.mean(Y))
-        # else:
-        #     self.used_feature_ids.append(feature_id)
+        if feature_id is None:
+            return Node(is_terminal=True, label=np.mean(Y))
 
         # Step 2: split the binary tree
         node = self.expand_tree(X, Y, feature_id, feature_val)
@@ -56,10 +59,9 @@ class RegressionTree:
         best_feature_val = None
 
         for feature_id in range(len(X[0])):
-            # if feature_id not in self.used_feature_ids:
-                f_val_set = set(X[:, feature_id])
-
-                for f_val in f_val_set:
+            f_val_set = set(X[:, feature_id])
+            for f_val in f_val_set:
+                if self.features[feature_id][f_val]:
                     Y_left = Y[X[:, feature_id] <= f_val]
                     mse_left = self.MSE(Y_left)
 
@@ -72,6 +74,9 @@ class RegressionTree:
                         mse_data = new_mse_data
                         best_feature_id = feature_id
                         best_feature_val = f_val
+        
+        if best_feature_val is not None:
+            self.features[best_feature_id][best_feature_val] = False
 
         return best_feature_id, best_feature_val
     

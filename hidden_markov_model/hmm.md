@@ -57,7 +57,7 @@ Enumerate all possible hidden state sequences, compute relative likelihoods with
 Define the probability of being in state $j$ after seeing $t$ observations and passing through the most possible state sequence $s_1 \dots s_{t−1}$ that maximizes the likelihood.
 $$v_t(j) = \max_{s_1, \dots, s_{t-1}}P(s_{1} \dots s_{t-1}, o_1 \dots o_t, s_t = j)$$  
 
-Besides to the regular probability matrix like forward algorith, we need another __backpointer matrix__ that records the paths.  
+Besides to the regular probability matrix like forward algorithm, we need another __backpointer matrix__ that records the paths.  
 
 * __Initialization__
   $$v_1(j) = \pi_jb_j(o_1)  \quad 1 \le j \le N$$

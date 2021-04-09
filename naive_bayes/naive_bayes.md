@@ -1,4 +1,4 @@
-#### Main idea  
+#### Model  
 $$\hat{y} = \argmax_{y \in Y}P(y|x) = \argmax_{y \in Y}\frac {P(x|y)P(y)} {P(x)}$$
 Since $P(x)$ is the same for all labels, omit it:  
 $$\hat{y} = \argmax_{y \in Y}P(y|x) = \argmax_{y \in Y}\overbrace{P(x|y)}^{likelihood}\overbrace{P(y)}^{prior}$$
@@ -13,16 +13,16 @@ $$\begin{aligned}
 As usual, we take log on the probability:
 $$\hat{y} = \argmax_{y \in Y}\overbrace{\sum_{i=0}^nlog(P(x_i|y))}^{likelihood} + \overbrace{log(P(y))}^{prior}$$
 
-#### Multinomial
-$P(x_i|y) = \frac {count(x_i, y) + 1} {\sum_{x_i \in V}(count(x_i, y) + 1)} = \frac {count(x_i, y) + 1} {\sum_{x_i \in V}(count(x_i, y)) + |V|}$
-$P(y) = \frac {\sum_{x_i \in V}count(x_i, y)} {\sum_{x_i \in V}count(x_i)}$
-$P(y|x) = P(y)\prod_{i=0}^nP(x_i|y)$
+#### Multinomial: word level
+$P(x_i|y) = \frac {count(x_i, y) + 1} {\sum_{x_i \in V}(count(x_i, y) + 1)} = \frac {count(x_i, y) + 1} {\sum_{x_i \in V}(count(x_i, y)) + |V|}$  
+$P(y) = \frac {\sum_{x_i \in V}count(x_i, y)} {\sum_{x_i \in V}count(x_i)}$  
+$P(y|x) = P(y)\prod_{i=0}^nP(x_i|y)$  
 n = number of observed features in x as true evidence
 
-#### Bernoulli
-$P(x_i|y) = \frac {N_{x_i \wedge y} + 1} {N_y + |Y|}$
-$P(y) = \frac {N_y} {\sum_{y \in Y}N_y}$
-$P(y|x) = P(y)\prod_{i=0}^nP(x_i|y)\prod_{j=0}^m(1-P(x_j|y))$
+#### Bernoulli: document level
+$P(x_i|y) = \frac {N_{x_i \wedge y} + 1} {N_y + |Y|}$  
+$P(y) = \frac {N_y} {\sum_{y \in Y}N_y}$  
+$P(y|x) = P(y)\prod_{i=0}^nP(x_i|y)\prod_{j=0}^m(1-P(x_j|y))$  
 n = number of observed features in x as true evidence  
 m = number of unobserved features in x as false evidence  
 n + m = total number of features one instance could have in space

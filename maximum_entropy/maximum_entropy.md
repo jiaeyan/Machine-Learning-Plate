@@ -3,7 +3,7 @@
 1. Entropy:  
 Uncertainty of a random variable.  
 $$H(X) = -\sum_{x \in X}p(x)log(p(x))$$
-When $X$ distribution is uniform, $H(X)$ is the max. The model with max entropy is the best statistical model among all possible models.  
+When $X$ distribution is uniform, $H(X)$ is the max, very uncertain, could be anything. The model with max entropy is the best statistical model among all possible models.  
 
 2. Conditional Entropy:  
 Known the distribution of X, the expected uncertainty of Y.  

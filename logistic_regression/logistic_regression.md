@@ -27,7 +27,7 @@ To make things easier, take log:
 $$logL(\theta) = \sum_{i=0}^ny^{(i)}logh_\theta(x^{(i)}) + (1-y^{(i)})log(1-h_\theta(x^{(i)}))$$
 
 #### Loss function  
-Cross entropy: used to quantify the difference between two probability distributions -- $p$ as true and $q$ as predicted:  
+Cross entropy: used to quantify the difference between two probability distributions, 0 if the same -- $p$ as true and $q$ as predicted:  
 $$H(p, q) = -\sum_{x \in X}p(x)logq(x)$$
 
 Cross entropy (loss) between real class and predicted class (two Bernoulii Distributions) for 1 instance *(here $n \in \{0, 1\}$ due to binary classification nature)*:  

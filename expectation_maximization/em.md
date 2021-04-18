@@ -1,5 +1,10 @@
 ### Main idea
 EM could be used for unsupervised learning for generative models.  
+* Complete data: {X, Y}  
+* Incomplete data: {X, _}  
+
+EM could compute the incomplete missing Y/states.  
+
 Given seen observations ($Y$, _incomplete data_) of __one certain event__ ($Y$ value is fixed, rather than a set), maximize __the likelihood of this particular event__ by enumerating all hidden states ($Z$):  
 $$\begin{aligned}
 L(\theta) &= logP(Y|\theta) \\ 
@@ -10,17 +15,21 @@ However there is __no closed form solution__, and this likelihood is hard to max
 * hidden variable $Z$ is unknown
 * there is log of sum/product  
 
-Instead of resolving $\theta$ all at once, we maximize it by __iteration of updating $\theta$__, so $L(\theta) > L(\theta^{(i)})$:  
+Instead of resolving $\theta$ all at once, we maximize it by __iteration of updating $\theta$__, so $L(\theta) > L(\theta^{(i)})$, where i means the $i_{th}$ iteration of $\theta$:  
 $$\begin{aligned}
 L(\theta) - L(\theta^{(i}) &= log\left( \sum_ZP(Y|Z, \theta)P(Z|\theta) \right) - logP(Y|\theta^{(i)}) \\
 &= \textcolor{blue}{log}\left( \textcolor{blue}{\sum_Z} \textcolor{green} {P(Z|Y,\theta^{(i)})} \frac {P(Y|Z, \theta)P(Z|\theta)} {\textcolor{green} {P(Z|Y, \theta^{(i)})}} \right) - logP(Y|\theta^{(i)}) \\
-&\ge \textcolor{blue}{\sum_Z}\textcolor{green}{P(Z|Y, \theta^{(i)})} \textcolor{blue}{log} \frac {P(Y|Z, \theta)P(Z|\theta)} {\textcolor{green} {P(Z|Y, \theta^{(i)})}} - logP(Y|\theta^{(i)})\\
+&Jenson Inequality:\ge \textcolor{blue}{\sum_Z}\textcolor{green}{P(Z|Y, \theta^{(i)})} \textcolor{blue}{log} \frac {P(Y|Z, \theta)P(Z|\theta)} {\textcolor{green} {P(Z|Y, \theta^{(i)})}} - logP(Y|\theta^{(i)}) \\
 &= \textcolor{blue}{\sum_Z}\textcolor{green}{P(Z|Y, \theta^{(i)})} \textcolor{blue}{log} \frac {P(Y|Z, \theta)P(Z|\theta)} {\textcolor{green} {P(Z|Y, \theta^{(i)})}} - \textcolor{green}{\sum_ZP(Z|Y, \theta^{(i)})}logP(Y|\theta^{(i)}) \\
 &= \sum_ZP(Z|Y, \theta^{(i)})\left[ log\frac {P(Y|Z, \theta)P(Z|\theta)} {P(Z|Y, \theta^{(i)})} - logP(Y|\theta^{(i)}) \right] \\
 &= \sum_ZP(Z|Y, \theta^{(i)})\left[ log\frac {P(Y|Z, \theta)P(Z|\theta)} {P(Z|Y, \theta^{(i)})P(Y|\theta^{(i)})} \right]
 \end{aligned}$$
 
-* Blue colors are from __Jensen inequality__
+* Blue colors are from __Jensen inequality__:  
+  * Convex function: $E[f(X)] \ge f(E(X))$  
+  * Concave function: $E[f(X)] \le f(E(X))$  
+  * $E(X) = \sum_{i}x_{i}p_{i}$, where $\sum_{i}p_{i} = 1$  
+  * when $Y = g(X)$, $E(Y) =\sum_{i}g(x_{i})p_{i}$
 * $\sum_ZP(Z|Y, \theta^{(i)}) = 1$, since $Y$ and $\theta^{(i)}$ are fixed, and this is just the distribution of $Z$, sum over as 1.
 
 Then we define a helper function $B(\theta, \theta^{(i)})$:  

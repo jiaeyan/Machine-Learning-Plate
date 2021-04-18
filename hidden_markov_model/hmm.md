@@ -17,6 +17,7 @@ With HMM $\lambda = (A, B, \pi)$, compute the likelihood of observation sequence
 ##### 1. Naive approach
 $O$: the observed sequence  
 $S$: one possible hidden state sequence  
+So we get the joint probability of them:  
 $$P(O, S) = P(O|S)P(S) = \prod_{i=1}^TP(o_i|s_i) \times \prod_{i=1}^TP(s_i|s_{i-1})\times \pi_{s_0}$$
 Now we can compute the probability of the observed sequence $O$ with all possible hidden state sequences by marginal probability:
 $$\begin{aligned}
@@ -57,7 +58,7 @@ Enumerate all possible hidden state sequences, compute relative likelihoods with
 Define the probability of being in state $j$ after seeing $t$ observations and passing through the most possible state sequence $s_1 \dots s_{t−1}$ that maximizes the likelihood.
 $$v_t(j) = \max_{s_1, \dots, s_{t-1}}P(s_{1} \dots s_{t-1}, o_1 \dots o_t, s_t = j)$$  
 
-Besides to the regular probability matrix like forward algorithm, we need another __backpointer matrix__ that records the paths.  
+Besides to the regular probability matrix like forward algorithm, we need another __backpointer matrix__ that records the paths, where each cell records the coming state id.  
 
 * __Initialization__
   $$v_1(j) = \pi_jb_j(o_1)  \quad 1 \le j \le N$$
@@ -146,7 +147,8 @@ We could maximize 3 components 1 by 1:
   {\sum\limits_{d=1}^D\sum\limits_{t=1}^{T-1}P(i_t^{(d)} = i | O,\overline{\lambda})}
   \end{aligned}$$  
   Again, since in Expectation step, we have:  
-  $$\xi_t^{(d)}(i,j) = P(i_t^{(d)} = i, i_{t+1}^{(d)} = j|O^{(d)}, \overline{\lambda})$$  $$\gamma_t^{(d)}(i) = P(i_t^{(d)} = i | O,\overline{\lambda})$$  
+  $$\xi_t^{(d)}(i,j) = P(i_t^{(d)} = i, i_{t+1}^{(d)} = j|O^{(d)}, \overline{\lambda})$$  
+  $$\gamma_t^{(d)}(i) = P(i_t^{(d)} = i | O,\overline{\lambda})$$  
   So we have:  
   $$a_{ij} = \frac{\sum\limits_{d=1}^D\sum\limits_{t=1}^{T-1}\xi_t^{(d)}(i,j)}{\sum\limits_{d=1}^D\sum\limits_{t=1}^{T-1}\gamma_t^{(d)}(i)}$$
 

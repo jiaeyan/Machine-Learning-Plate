@@ -141,12 +141,12 @@ class LinearRegression:
         explained_variance=metrics.explained_variance_score(Y_true, Y_pred)
         mean_absolute_error=metrics.mean_absolute_error(Y_true, Y_pred) 
         mse=metrics.mean_squared_error(Y_true, Y_pred) 
-        mean_squared_log_error=metrics.mean_squared_log_error(Y_true, Y_pred)
+        # mean_squared_log_error=metrics.mean_squared_log_error(Y_true, Y_pred)
         median_absolute_error=metrics.median_absolute_error(Y_true, Y_pred)
         r2=metrics.r2_score(Y_true, Y_pred)
 
         print('Explained_variance: ', round(explained_variance,4))    
-        print('Mean_squared_log_error: ', round(mean_squared_log_error,4))
+        # print('Mean_squared_log_error: ', round(mean_squared_log_error,4))
         print('Median_absolute_error: ', round(median_absolute_error))
         print('R2: ', round(r2,4))
         print('MAE: ', round(mean_absolute_error,4))
@@ -179,7 +179,7 @@ def generate_data(num_samples, num_features, w, b):
 
 
 def generate_house_data():
-    from sklearn.datasets.california_housing import fetch_california_housing
+    from sklearn.datasets import fetch_california_housing
     from sklearn.preprocessing import StandardScaler
     houses = fetch_california_housing()
     scaler = StandardScaler()

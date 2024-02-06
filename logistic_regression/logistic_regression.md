@@ -1,7 +1,7 @@
-#### Model  
+### Model  
 Logistic regression computes a __probability__ _(0-1, different from linear regression)_ of the most possible class for an instance.  
 
-Though its output is still continuous like linear regression, the classfication result is on top of the continuous real number, e.g., take the probability of 0.5 as a threshold between **binary classes**.  
+Though its output is still continuous like linear regression, the classfication result is on top of the continuous real number, e.g., take the probability of 0.5 as a threshold between *__binary classes__*.  
 
 Sigmoid function:  
 
@@ -10,7 +10,12 @@ $$z_\theta(x) = \theta_0 + \theta_1x_1 + \theta_2x_2 + \theta_3x_3 + ... = \sum_
 
 $\theta_0$ is generally referred as the bias/b.  
 
-#### Likelihood  
+The logistic regression model can be interpreted as a *__simple neural network__*:  
+- it has a real-valued weight vector  
+- it has a real-valued bias  
+- it uses a _sigmoid function_ as its activation function  
+
+### Likelihood  
 Assume:  
 $p(y=1|x;\theta) = h_\theta(x)$  
 $p(y=0|x;\theta) = 1 - h_\theta(x)$  
@@ -26,7 +31,7 @@ L(\theta) &= p(y|X;\theta) \\
 To make things easier, take log:  
 $$logL(\theta) = \sum_{i=0}^ny^{(i)}logh_\theta(x^{(i)}) + (1-y^{(i)})log(1-h_\theta(x^{(i)}))$$
 
-#### Loss function  
+### Loss function  
 Cross entropy: used to quantify the difference between two probability distributions, 0 if the same -- $p$ as true and $q$ as predicted:  
 $$H(p, q) = -\sum_{x \in X}p(x)logq(x)$$
 
@@ -38,12 +43,14 @@ which looks exactly the same as the log likelihood of 1 instance above. So to co
 Cross entropy between real class and predicted class for all instances:  
 $$J(\theta) = \sum_{i=0}^n-H(y, \hat{y})= -logL(\theta) = -(\sum_{i=0}^ny^{(i)}logh_\theta(x^{(i)}) + (1-y^{(i)})log(1-h_\theta(x^{(i)})))$$
 
-#### Update rule  
+The partial derivative of the cost function happens to be the same as *__linear regression__*. Will skip here.
+
+### Updating rule  
 single example single weight:  
 $$\theta_j := \theta_j - \alpha(h_\theta(x^{(i)})-y^{(i)})x_j^{(i)}$$  
 single example all weights (__SGD__):  
 $$\theta := \theta - \alpha(h_\theta(x^{(i)})-y^{(i)})x^{(i)}$$
 batch examples single weight:  
-$$\theta_j := \theta_j - \alpha\sum_{i=0}^n(h_\theta(x^{(i)})-y^{(i)})x_j^{(i)}$$  
+$$\theta_j := \theta_j - \alpha\frac1n\sum_{i=0}^n(h_\theta(x^{(i)})-y^{(i)})x_j^{(i)}$$  
 batch examples all weights (__BGD__):  
-$$\theta := \theta - \alpha\sum_{i=0}^n(h_\theta(x^{(i)})-y^{(i)})x^{(i)}$$
+$$\theta := \theta - \alpha\frac1n\sum_{i=0}^n(h_\theta(x^{(i)})-y^{(i)})x^{(i)}$$

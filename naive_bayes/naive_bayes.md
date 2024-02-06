@@ -21,7 +21,7 @@ $$\begin{aligned}
 \end{aligned}$$
 This is the *__Maximum Likelihood Estimation (MLE)__* of the observations.  
 As usual, we take log on the probability:
-$$\hat{y} = \argmax_{y \in Y}\overbrace{\sum_{i=0}^nlog(P(x_i|y))}^{likelihood} + \overbrace{log(P(y))}^{prior}$$
+$$\overbrace{\hat{y}}^{posterior} = \argmax_{y \in Y}\overbrace{\sum_{i=0}^nlog(P(x_i|y))}^{likelihood} + \overbrace{log(P(y))}^{prior}$$
 
 ### Multinomial: word level
 $P(x_i|y) = \frac {count(x_i, y) + 1} {\sum_{x_i \in V}(count(x_i, y) + 1)} = \frac {count(x_i, y) + 1} {\sum_{x_i \in V}(count(x_i, y)) + |V|}$  

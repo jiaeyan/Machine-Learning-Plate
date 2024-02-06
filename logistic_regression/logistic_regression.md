@@ -29,7 +29,7 @@ L(\theta) &= p(y|X;\theta) \\
 \end{aligned}$
 
 To make things easier, take log:  
-$$logL(\theta) = \sum_{i=0}^ny^{(i)}logh_\theta(x^{(i)}) + (1-y^{(i)})log(1-h_\theta(x^{(i)}))$$
+$$logL(\theta) = \sum_{i=0}^n(y^{(i)}logh_\theta(x^{(i)}) + (1-y^{(i)})log(1-h_\theta(x^{(i)})))$$
 
 ### Loss function  
 Cross entropy: used to quantify the difference between two probability distributions, 0 if the same -- $p$ as true and $q$ as predicted:  
@@ -41,9 +41,9 @@ So we get:
 $$-H(y, \hat{y}) = \sum_{i=0}^ny_ilog\hat{y}_i = ylog\hat{y} + (1-y)log(1-\hat{y})$$
 which looks exactly the same as the log likelihood of 1 instance above. So to compute the loss of the whole data, we can compute the sum of __negative log likelihood/negative cross entropy__ of the whole data set.  
 Cross entropy between real class and predicted class for all instances:  
-$$J(\theta) = \sum_{i=0}^n-H(y, \hat{y})= -logL(\theta) = -(\sum_{i=0}^ny^{(i)}logh_\theta(x^{(i)}) + (1-y^{(i)})log(1-h_\theta(x^{(i)})))$$
+$$J(\theta) = -\frac1n\sum_{i=0}^n\left[y^{(i)}logh_\theta(x^{(i)}) + (1-y^{(i)})log(1-h_\theta(x^{(i)}))\right]$$
 
-The partial derivative of the cost function happens to be the same as *__linear regression__*. Will skip here.
+The partial derivative of the cost function happens to be the same as *__linear regression__*. Will skip here.  
 
 ### Updating rule  
 single example single weight:  
